@@ -1,0 +1,43 @@
+# Carpeta de librería generada por Unity
+[Ll]ibrary/
+[Tt]emp/
+[Oo]bj/
+[Bb]uild/
+[Bb]uilds/
+[Ll]ogs/
+[Mm]emoryCaptures/
+
+# Archivos generados por Visual Studio / Rider
+.vs/
+*.csproj
+*.unityproj
+*.sln
+*.suo
+*.tmp
+*.user
+*.userprefs
+*.pidb
+*.booproj
+*.svd
+*.pdb
+*.mdb
+*.opendb
+*.VC.db
+
+# Archivos de cache de Unity
+*.pidb.meta
+*.pdb.meta
+*.mdb.meta
+*.opendb.meta
+
+# Carpeta de paquetes descargados
+/[Pp]ackages/*
+!/[Pp]ackages/manifest.json
+!/[Pp]ackages/packages-lock.json
+
+# Archivos de sistema
+.DS_Store
+Thumbs.db
+
+# Crash Reports
+sysinfo.txt
