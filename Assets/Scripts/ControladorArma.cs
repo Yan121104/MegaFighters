@@ -140,6 +140,12 @@ public class WeaponController : MonoBehaviour
         {
             GameObject bullet = Instantiate(bulletPrefab, firePoint.position, firePoint.rotation);
             Rigidbody2D rb = bullet.GetComponent<Rigidbody2D>();
+
+            // 🔥 Asignar quién disparó
+            BulletLife bl = bullet.GetComponent<BulletLife>();
+            if (bl != null)
+                bl.shooter = gameObject;
+
             float direccion = transform.localScale.x > 0 ? 1f : -1f;
             rb.AddForce(new Vector2(direccion, 0) * bulletForce, ForceMode2D.Impulse);
 
@@ -147,6 +153,7 @@ public class WeaponController : MonoBehaviour
             Debug.Log("🔫 Disparo con " + weapon + " | Munición restante: " + currentAmmo[weapon]);
         }
     }
+
 
     void MeleeAttack(WeaponType tool)
     {

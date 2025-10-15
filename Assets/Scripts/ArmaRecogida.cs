@@ -7,6 +7,7 @@ public class WeaponPickup : MonoBehaviour
 
     void Update()
     {
+        // Solo recoge si está cerca y presiona X
         if (jugadorCerca && Input.GetKeyDown(KeyCode.X))
         {
             RecogerObjeto();
@@ -15,6 +16,8 @@ public class WeaponPickup : MonoBehaviour
 
     private void RecogerObjeto()
     {
+        if (jugador == null) return;
+
         WeaponController wc = jugador.GetComponent<WeaponController>();
 
         if (wc != null)
@@ -22,6 +25,7 @@ public class WeaponPickup : MonoBehaviour
             string[] herramientas = { "Hacha", "Sable", "Machete" };
             bool esHerramienta = false;
 
+            // Detecta herramientas cuerpo a cuerpo
             foreach (string herramienta in herramientas)
             {
                 if (gameObject.name.ToLower().Contains(herramienta.ToLower()))
@@ -32,9 +36,9 @@ public class WeaponPickup : MonoBehaviour
                 }
             }
 
+            // Detecta armas de fuego
             if (!esHerramienta)
             {
-                // armas de fuego
                 if (gameObject.name.ToLower().Contains("basuca"))
                     wc.EquipWeapon(WeaponController.WeaponType.Basuca);
                 else if (gameObject.name.ToLower().Contains("desert"))
@@ -52,14 +56,16 @@ public class WeaponPickup : MonoBehaviour
                 else if (gameObject.name.ToLower().Contains("snyper"))
                     wc.EquipWeapon(WeaponController.WeaponType.Snyper);
             }
-        }
 
-        Destroy(gameObject);
+            Debug.Log($"{jugador.name} recogió {gameObject.name}");
+            Destroy(gameObject); // Desaparece el arma del suelo
+        }
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.CompareTag("Player"))
+        // ✅ Detecta cualquier personaje con WeaponController
+        if (collision.GetComponent<WeaponController>() != null)
         {
             jugadorCerca = true;
             jugador = collision.gameObject;
@@ -68,7 +74,7 @@ public class WeaponPickup : MonoBehaviour
 
     private void OnTriggerExit2D(Collider2D collision)
     {
-        if (collision.CompareTag("Player"))
+        if (collision.GetComponent<WeaponController>() != null)
         {
             jugadorCerca = false;
             jugador = null;
