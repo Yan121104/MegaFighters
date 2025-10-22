@@ -19,34 +19,40 @@ public class Portal : MonoBehaviour
 
         Movimiento jugador = other.GetComponent<Movimiento>();
         MovimientoBotInteligente bot = other.GetComponent<MovimientoBotInteligente>();
-        Rigidbody2D rb = other.GetComponent<Rigidbody2D>();
+        Rigidbody2D rb = other.attachedRigidbody;
 
         if (jugador != null || bot != null)
         {
-            // Teletransportar
+            // Teletransportar al destino
             other.transform.position = destino.position;
 
-            int nuevaDireccion = -1; // default invertir
+            int nuevaDireccion = -1; // dirección por defecto
 
             if (jugador != null)
             {
+                // Invertir dirección del jugador
                 jugador.direccion *= -1;
                 jugador.forzarMovimiento = true;
                 nuevaDireccion = jugador.direccion;
             }
             else if (bot != null)
             {
-                bot.ActivarPortal(-bot.Direccion); // fuerza movimiento
-                nuevaDireccion = bot.Direccion;    // obtiene la dirección mediante getter
+                // Reiniciar su estado de movimiento después del portal
+                int nuevaDir = -bot.Direccion; // invierte la dirección
+                bot.ActivarPortal(nuevaDir);
+                nuevaDireccion = nuevaDir;
+
+                // Reanudar su comportamiento normal tras breve pausa
+                bot.ReanudarMovimientoDespuesDe(0.2f);
             }
 
-            // Empuje inicial
+            // Aplicar empuje
             if (rb != null)
             {
                 rb.velocity = new Vector2(nuevaDireccion * fuerzaEmpuje, rb.velocity.y);
             }
 
-            // Cooldown en ambos portales
+            // Activar cooldown en ambos portales
             StartCoroutine(DesactivarPorUnMomento());
             Portal portalDestino = destino.GetComponent<Portal>();
             if (portalDestino != null)
