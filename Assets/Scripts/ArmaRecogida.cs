@@ -5,9 +5,11 @@ public class WeaponPickup : MonoBehaviour
     private bool jugadorCerca = false;
     private GameObject jugador;
 
+    [Header("Efecto de Sonido al Recoger")]
+    public AudioClip pickupSound;
+
     void Update()
     {
-        // Solo recoge si está cerca y presiona X
         if (jugadorCerca && Input.GetKeyDown(KeyCode.X))
         {
             RecogerObjeto();
@@ -25,7 +27,7 @@ public class WeaponPickup : MonoBehaviour
             string[] herramientas = { "Hacha", "Sable", "Machete" };
             bool esHerramienta = false;
 
-            // Detecta herramientas cuerpo a cuerpo
+            // 🪓 Detectar herramientas cuerpo a cuerpo
             foreach (string herramienta in herramientas)
             {
                 if (gameObject.name.ToLower().Contains(herramienta.ToLower()))
@@ -36,7 +38,7 @@ public class WeaponPickup : MonoBehaviour
                 }
             }
 
-            // Detecta armas de fuego
+            // 🔫 Detectar armas de fuego
             if (!esHerramienta)
             {
                 if (gameObject.name.ToLower().Contains("basuca"))
@@ -57,14 +59,20 @@ public class WeaponPickup : MonoBehaviour
                     wc.EquipWeapon(WeaponController.WeaponType.Snyper);
             }
 
+            // 🎵 Reproduce el sonido aunque el objeto se destruya
+            if (pickupSound != null)
+            {
+                AudioSource.PlayClipAtPoint(pickupSound, transform.position, 1f);
+            }
+
             Debug.Log($"{jugador.name} recogió {gameObject.name}");
-            Destroy(gameObject); // Desaparece el arma del suelo
+
+            Destroy(gameObject, 0.5f); // le da un pequeño margen (50ms)
         }
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        // ✅ Detecta cualquier personaje con WeaponController
         if (collision.GetComponent<WeaponController>() != null)
         {
             jugadorCerca = true;

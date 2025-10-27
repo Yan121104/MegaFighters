@@ -18,6 +18,15 @@ public class Movimiento : MonoBehaviour
     private Animator animator;
     private float movimiento;
 
+    [Header("Salto continuo")]
+    public float tiempoEntreSaltos = 0.4f;
+    private float temporizadorSalto = 0f;
+
+    [Header("Sonido de salto")]
+    public AudioSource audioSource;
+    public AudioClip saltoSound;
+    public float volumenSalto = 0.8f;
+
     // --- Para plataformas móviles ---
     private Vector2 plataformaVelocidad;
     public string nombreLayerPlataforma = "Suelo";
@@ -25,17 +34,34 @@ public class Movimiento : MonoBehaviour
     private Vector2 ultimaInerciaPlataforma = Vector2.zero;
 
     // --- Dirección del personaje ---
-    public int direccion = 1;  // 1 = derecha, -1 = izquierda
+    public int direccion = 1;
 
     // --- Movimiento forzado por portal ---
     [HideInInspector] public bool forzarMovimiento = false;
+
+    [Header("Escaleras")]
+    public LayerMask escaleraLayer;
+    public float velocidadEscalera = 3f;
+    private bool enEscalera = false;
+    private bool subiendoEscalera = false;
+
+    private Vector3 escalaOriginal;
 
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponentInChildren<Animator>();
+        escalaOriginal = transform.localScale;
+
         if (animator == null)
             Debug.LogError("⚠️ No se encontró Animator en " + gameObject.name);
+
+        if (audioSource == null)
+            audioSource = GetComponent<AudioSource>();
+
+        // 🔥 AÑADE ESTO 🔥
+        enSuelo = Physics2D.OverlapCircle(checkSuelo.position, radioSuelo, sueloLayer);
+        animator.SetBool("Saltando", !enSuelo);
     }
 
     void FixedUpdate()
@@ -45,76 +71,131 @@ public class Movimiento : MonoBehaviour
 
     void Update()
     {
-        float inputHorizontal = 0f;
 
-        if (Input.GetKey(KeyCode.RightArrow))
-            inputHorizontal = 1f;
-        else if (Input.GetKey(KeyCode.LeftArrow))
-            inputHorizontal = -1f;
-
-        // Si está forzado por el portal, ignora el input
-        if (forzarMovimiento)
+        // Esperar a que el juego inicie
+        if (!InicioNivel.banderaJuegoIniciado)
         {
-            movimiento = direccion; // sigue moviéndose en la dirección actual
+            rb.velocity = Vector2.zero;
+            animator.SetFloat("Velocidad", 0f);
+            animator.SetBool("Saltando", false);
+            return; // no hacer nada más
+        }
+
+        // --- Movimiento horizontal ---
+        float inputHorizontal = 0f;
+        if (Input.GetKey(KeyCode.RightArrow)) inputHorizontal = 1f;
+        else if (Input.GetKey(KeyCode.LeftArrow)) inputHorizontal = -1f;
+
+        if (forzarMovimiento)
+            movimiento = direccion;
+        else
+            movimiento = inputHorizontal;
+
+        if (inputHorizontal == 0)
+            forzarMovimiento = false;
+
+        velocidadActual = Input.GetKey(KeyCode.Z) ? velocidadCorrer : velocidadNormal;
+
+        Vector2 direccionMovimiento = movimiento > 0 ? Vector2.right :
+                                      (movimiento < 0 ? Vector2.left : Vector2.zero);
+        Vector2 velJugador = direccionMovimiento * (Mathf.Abs(movimiento) * velocidadActual);
+        Vector2 velPlataforma = enSuelo ? plataformaVelocidad : ultimaInerciaPlataforma;
+
+        rb.velocity = new Vector2(velJugador.x + velPlataforma.x, rb.velocity.y);
+
+        // --- Dirección del personaje ---
+        if (movimiento > 0.01f) direccion = 1;
+        else if (movimiento < -0.01f) direccion = -1;
+
+        // Mantener escala normal del personaje
+        transform.localScale = new Vector3(
+            direccion * Mathf.Abs(escalaOriginal.x),
+            Mathf.Abs(escalaOriginal.y),
+            escalaOriginal.z
+        );
+
+        // --- Salto continuo ---
+        if (Input.GetKey(KeyCode.UpArrow))
+        {
+            if (enSuelo && temporizadorSalto <= 0f)
+            {
+                ultimaInerciaPlataforma = plataformaVelocidad;
+                rb.velocity = new Vector2(rb.velocity.x + ultimaInerciaPlataforma.x, 0)
+                              + Vector2.up * fuerzaSalto;
+
+                if (audioSource != null && saltoSound != null)
+                    audioSource.PlayOneShot(saltoSound, volumenSalto);
+
+                temporizadorSalto = tiempoEntreSaltos;
+            }
         }
         else
         {
-            movimiento = inputHorizontal;
+            temporizadorSalto = 0f;
         }
 
-        // Si el jugador suelta las teclas de movimiento, desactivar forzado
-        if (inputHorizontal == 0)
+        if (temporizadorSalto > 0f)
+            temporizadorSalto -= Time.deltaTime;
+
+        // --- Escaleras ---
+        RaycastHit2D escaleraHitArriba = Physics2D.Raycast(transform.position, Vector2.up, 1f, escaleraLayer);
+        RaycastHit2D escaleraHitAbajo = Physics2D.Raycast(transform.position, Vector2.down, 1f, escaleraLayer);
+
+        bool hayEscaleraArriba = escaleraHitArriba.collider != null;
+        bool hayEscaleraAbajo = escaleraHitAbajo.collider != null;
+
+        // Entrar a la escalera
+        if (!enEscalera)
         {
-            forzarMovimiento = false;
+            if ((hayEscaleraArriba && Input.GetKey(KeyCode.UpArrow)) ||
+                (hayEscaleraAbajo && Input.GetKey(KeyCode.DownArrow)))
+            {
+                enEscalera = true;
+                rb.gravityScale = 0f;
+                rb.velocity = Vector2.zero;
+            }
         }
 
-        // Ajustar velocidad
-        velocidadActual = Input.GetKey(KeyCode.Z) ? velocidadCorrer : velocidadNormal;
+        // Movimiento en escalera
+        if (enEscalera)
+        {
+            float vertical = Input.GetAxisRaw("Vertical");
+            rb.velocity = new Vector2(rb.velocity.x, vertical * velocidadEscalera);
+            rb.gravityScale = 0f;
 
-        // --- Movimiento y velocidad ---
-        Vector2 direccionMovimiento = movimiento > 0 ? Vector2.right :
-                                      (movimiento < 0 ? Vector2.left : Vector2.zero);
+            // Animación de escalera
+            animator.SetBool("Saltando", false);
 
-        Vector2 velJugador = direccionMovimiento * (Mathf.Abs(movimiento) * velocidadActual);
+            if (Mathf.Abs(vertical) > 0.01f)
+            {
+                animator.SetBool("EnEscalera", true);
+                animator.speed = 1f;
+            }
+            else
+            {
+                animator.speed = 0f;
+            }
 
-        // 🔹 Si está en suelo/plataforma -> usar velocidad de la plataforma
-        // 🔹 Si está en el aire -> mantener la última inercia de la plataforma
-        Vector2 velPlataforma = enSuelo ? plataformaVelocidad : ultimaInerciaPlataforma;
+            // Salir de escalera
+            if (enSuelo || (!Physics2D.Raycast(transform.position, Vector2.up, 1f, escaleraLayer).collider &&
+                            !Physics2D.Raycast(transform.position, Vector2.down, 1f, escaleraLayer).collider))
+            {
+                enEscalera = false;
+                rb.gravityScale = 2f;
+                animator.speed = 1f;
+                animator.SetBool("EnEscalera", false);
+            }
+        }
+        else
+        {
+            animator.SetBool("EnEscalera", false);
+            animator.SetBool("Saltando", !enSuelo);
+        }
 
-        // Asignar velocidad final (respetando velocidad Y actual)
-        rb.velocity = new Vector2(velJugador.x + velPlataforma.x, rb.velocity.y);
-
-        // Animaciones
-        // 🔹 Usar solo el input del jugador para la animación de caminar/correr
+        // --- Animación de velocidad horizontal ---
         animator.SetFloat("Velocidad", Mathf.Abs(movimiento * velocidadActual));
-
-        // 🔹 Estado de salto
-        animator.SetBool("Saltando", !enSuelo);
-
-
-        // Cambiar dirección SOLO si hay input o si está forzado
-        if (movimiento > 0.01f)
-            direccion = 1;
-        else if (movimiento < -0.01f)
-            direccion = -1;
-
-        // Aplicar flip visual según dirección
-        transform.localScale = new Vector3(direccion * Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
-
-        // Salto
-        if (Input.GetKeyDown(KeyCode.UpArrow) && enSuelo)
-        {
-            // Guardamos la inercia de la plataforma
-            ultimaInerciaPlataforma = plataformaVelocidad;
-
-            // Aplicamos salto + inercia horizontal
-            rb.velocity = new Vector2(rb.velocity.x + ultimaInerciaPlataforma.x, 0)
-                          + Vector2.up * fuerzaSalto;
-        }
-
     }
 
-    // --- Plataformas móviles ---
     void OnCollisionStay2D(Collision2D other)
     {
         if (other.gameObject.layer == LayerMask.NameToLayer(nombreLayerPlataforma))
@@ -129,7 +210,6 @@ public class Movimiento : MonoBehaviour
     {
         if (other.gameObject.layer == LayerMask.NameToLayer(nombreLayerPlataforma))
         {
-            // Guardamos la última velocidad de la plataforma al salir
             ultimaInerciaPlataforma = plataformaVelocidad;
             plataformaVelocidad = Vector2.zero;
         }
@@ -141,6 +221,26 @@ public class Movimiento : MonoBehaviour
         {
             Gizmos.color = Color.red;
             Gizmos.DrawWireSphere(checkSuelo.position, radioSuelo);
+        }
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (((1 << collision.gameObject.layer) & escaleraLayer) != 0)
+        {
+            enEscalera = true;
+            rb.gravityScale = 0f;
+            rb.velocity = Vector2.zero;
+        }
+    }
+
+    private void OnTriggerExit2D(Collider2D collision)
+    {
+        if (((1 << collision.gameObject.layer) & escaleraLayer) != 0)
+        {
+            enEscalera = false;
+            rb.gravityScale = 2f;
+            animator.SetBool("EnEscalera", false);
         }
     }
 }

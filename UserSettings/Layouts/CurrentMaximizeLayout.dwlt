@@ -45,9 +45,9 @@ MonoBehaviour:
     m_Tooltip: 
   m_Pos:
     serializedVersion: 2
-    x: 232
+    x: 231.33334
     y: 72.66667
-    width: 701.3333
+    width: 702
     height: 292.33334
   m_SerializedDataModeController:
     m_DataMode: 0
@@ -59,15 +59,13 @@ MonoBehaviour:
     m_LastAppliedPresetName: Default
     m_SaveData: []
     m_OverlaysVisible: 1
-  m_SerializedViewNames:
-  - UnityEditor.DeviceSimulation.SimulatorWindow
-  m_SerializedViewValues:
-  - C:\Users\gered\OneDrive\Escritorio\Proyectos\proyectos unity\MegaFighters\Library\PlayModeViewStates\1d3218cf78b5dcf4f84e3ed376fe0e27
+  m_SerializedViewNames: []
+  m_SerializedViewValues: []
   m_PlayModeViewName: GameView
   m_ShowGizmos: 0
   m_TargetDisplay: 0
   m_ClearColor: {r: 0, g: 0, b: 0, a: 0}
-  m_TargetSize: {x: 1052, y: 407}
+  m_TargetSize: {x: 1053, y: 407}
   m_TextureFilterMode: 0
   m_TextureHideFlags: 61
   m_RenderIMGUI: 1
@@ -82,8 +80,8 @@ MonoBehaviour:
     m_VRangeLocked: 0
     hZoomLockedByDefault: 0
     vZoomLockedByDefault: 0
-    m_HBaseRangeMin: -350.6667
-    m_HBaseRangeMax: 350.6667
+    m_HBaseRangeMin: -351
+    m_HBaseRangeMax: 351
     m_VBaseRangeMin: -135.66667
     m_VBaseRangeMax: 135.66667
     m_HAllowExceedBaseRangeMin: 1
@@ -103,23 +101,23 @@ MonoBehaviour:
       serializedVersion: 2
       x: 0
       y: 21
-      width: 701.3333
+      width: 702
       height: 271.33334
-    m_Scale: {x: 0.99999994, y: 0.9999999}
-    m_Translation: {x: 350.66666, y: 135.66667}
+    m_Scale: {x: 1, y: 1}
+    m_Translation: {x: 351, y: 135.66667}
     m_MarginLeft: 0
     m_MarginRight: 0
     m_MarginTop: 0
     m_MarginBottom: 0
     m_LastShownAreaInsideMargins:
       serializedVersion: 2
-      x: -350.6667
-      y: -135.66669
-      width: 701.3334
-      height: 271.33337
+      x: -351
+      y: -135.66667
+      width: 702
+      height: 271.33334
     m_MinimalGUI: 1
-  m_defaultScale: 0.99999994
-  m_LastWindowPixelSize: {x: 1052, y: 438.5}
+  m_defaultScale: 1
+  m_LastWindowPixelSize: {x: 1053, y: 438.5}
   m_ClearInEditMode: 1
   m_NoCameraWarning: 1
   m_LowResolutionForAspectRatios: 00000000000000000000
@@ -192,7 +190,7 @@ MonoBehaviour:
     serializedVersion: 2
     x: 0
     y: 0
-    width: 232
+    width: 231.33333
     height: 313.33334
   m_MinSize: {x: 201, y: 221}
   m_MaxSize: {x: 4001, y: 4021}
@@ -223,7 +221,7 @@ MonoBehaviour:
     serializedVersion: 2
     x: 0
     y: 72.66667
-    width: 231
+    width: 230.33333
     height: 292.33334
   m_SerializedDataModeController:
     m_DataMode: 0
@@ -238,9 +236,9 @@ MonoBehaviour:
   m_SceneHierarchy:
     m_TreeViewState:
       scrollPos: {x: 0, y: 0}
-      m_SelectedIDs: 
+      m_SelectedIDs: b2880000
       m_LastClickedID: 0
-      m_ExpandedIDs: 12fbffff
+      m_ExpandedIDs: 605fffff8e98ffffe29dffff12fbffffe66e00004e6f0000
       m_RenameOverlay:
         m_UserAcceptedRename: 0
         m_Name: 
@@ -279,9 +277,9 @@ MonoBehaviour:
   m_Children: []
   m_Position:
     serializedVersion: 2
-    x: 232
+    x: 231.33333
     y: 0
-    width: 703.3333
+    width: 704
     height: 313.33334
   m_MinSize: {x: 102, y: 121}
   m_MaxSize: {x: 4002, y: 4021}
@@ -291,7 +289,7 @@ MonoBehaviour:
   - {fileID: 9}
   - {fileID: 2}
   m_Selected: 2
-  m_LastSelected: 0
+  m_LastSelected: 1
 --- !u!114 &8
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -312,9 +310,9 @@ MonoBehaviour:
     m_Tooltip: 
   m_Pos:
     serializedVersion: 2
-    x: 232
+    x: 231.33334
     y: 72.66667
-    width: 701.3333
+    width: 702
     height: 292.33334
   m_SerializedDataModeController:
     m_DataMode: 0
@@ -382,7 +380,7 @@ MonoBehaviour:
       floating: 0
       collapsed: 0
       displayed: 1
-      snapOffset: {x: 0, y: 0}
+      snapOffset: {x: 0, y: 50.66664}
       snapOffsetDelta: {x: 0, y: 0}
       snapCorner: 0
       id: unity-transform-toolbar
@@ -551,7 +549,7 @@ MonoBehaviour:
       floating: 0
       collapsed: 0
       displayed: 0
-      snapOffset: {x: 0, y: 0}
+      snapOffset: {x: 0, y: 25.333334}
       snapOffsetDelta: {x: 0, y: 0}
       snapCorner: 0
       id: Scene View/Particles
@@ -603,9 +601,9 @@ MonoBehaviour:
       floating: 0
       collapsed: 0
       displayed: 1
-      snapOffset: {x: 238.66666, y: 0}
+      snapOffset: {x: -463.33334, y: -292}
       snapOffsetDelta: {x: 0, y: 0}
-      snapCorner: 0
+      snapCorner: 3
       id: UnityEditor.SceneViewCameraOverlay
       index: 12
       layout: 4
@@ -674,9 +672,9 @@ MonoBehaviour:
   m_PlayAudio: 0
   m_AudioPlay: 0
   m_Position:
-    m_Target: {x: -1.2775573, y: 0.043098375, z: 445.10507}
+    m_Target: {x: -3.3821747, y: 0.64327127, z: -1.3247584}
     speed: 2
-    m_Value: {x: -1.2775573, y: 0.043098375, z: 445.10507}
+    m_Value: {x: -3.3821747, y: 0.64327127, z: -1.3247584}
   m_RenderMode: 0
   m_CameraMode:
     drawMode: 0
@@ -726,9 +724,9 @@ MonoBehaviour:
     speed: 2
     m_Value: {x: 0, y: 0, z: 0, w: 1}
   m_Size:
-    m_Target: 5.960315
+    m_Target: 7.1821795
     speed: 2
-    m_Value: 5.960315
+    m_Value: 7.1821795
   m_Ortho:
     m_Target: 1
     speed: 2
@@ -773,10 +771,10 @@ MonoBehaviour:
     m_Tooltip: 
   m_Pos:
     serializedVersion: 2
-    x: 233.33334
+    x: 231.33334
     y: 72.66667
-    width: 704
-    height: 293
+    width: 702
+    height: 292.33334
   m_SerializedDataModeController:
     m_DataMode: 0
     m_PreferredDataMode: 0
@@ -806,14 +804,14 @@ MonoBehaviour:
     - {fileID: 2656105591539821749, guid: c2fae05e995770d4eaeec0e604a3408c, type: 2}
     - {fileID: 2656105591539821749, guid: a8cd712fa3747fd4aa1aeb5d51db7459, type: 2}
     m_ValueSerializationHelper:
-    - e00: 0.53502494
+    - e00: 0.6709124
       e01: 0
       e02: 0
-      e03: 1.3455505
+      e03: -35.871964
       e10: 0
-      e11: 0.53502494
+      e11: 0.6709124
       e12: 0
-      e13: 6.4719086
+      e13: -81.93887
       e20: 0
       e21: 0
       e22: 1
@@ -854,14 +852,14 @@ MonoBehaviour:
       e31: 0
       e32: 0
       e33: 1
-    - e00: 1.0533272
+    - e00: 0.76102895
       e01: 0
       e02: 0
-      e03: -93.22595
+      e03: -5.56575
       e10: 0
-      e11: 1.0533272
+      e11: 0.76102895
       e12: 0
-      e13: 19.633041
+      e13: 59.417374
       e20: 0
       e21: 0
       e22: 1
@@ -1075,7 +1073,7 @@ MonoBehaviour:
   m_MiniTool: 0
   m_LockTracker:
     m_IsLocked: 0
-  m_CurrentEditor: 0
+  m_CurrentEditor: 1
   m_LayerEditor:
     m_SelectedLayerIndex: 0
 --- !u!114 &10
@@ -1152,7 +1150,7 @@ MonoBehaviour:
     m_SkipHidden: 0
     m_SearchArea: 1
     m_Folders:
-    - Assets/Audio
+    - Assets/Scenes
     m_Globs: []
     m_OriginalText: 
     m_ImportLogFlags: 0
@@ -1160,16 +1158,16 @@ MonoBehaviour:
   m_ViewMode: 1
   m_StartGridSize: 96
   m_LastFolders:
-  - Assets/Audio
+  - Assets/Scenes
   m_LastFoldersGridSize: 96
   m_LastProjectPath: C:\Users\gered\OneDrive\Escritorio\Proyectos\proyectos unity\MegaFighters
   m_LockTracker:
     m_IsLocked: 0
   m_FolderTreeState:
-    scrollPos: {x: 0, y: 3.0000305}
-    m_SelectedIDs: 7e760000
-    m_LastClickedID: 30334
-    m_ExpandedIDs: 00000000ba710000bc710000be710000c0710000c2710000c4710000c6710000c871000000ca9a3b
+    scrollPos: {x: 0, y: 0}
+    m_SelectedIDs: 6a760000
+    m_LastClickedID: 30314
+    m_ExpandedIDs: 000000003e74000040740000427400004474000046740000487400004a7400004c7400004e74000000ca9a3b
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -1197,7 +1195,7 @@ MonoBehaviour:
     scrollPos: {x: 0, y: 0}
     m_SelectedIDs: 
     m_LastClickedID: 0
-    m_ExpandedIDs: 00000000ba710000bc710000be710000c0710000c2710000c4710000c6710000c871000000ca9a3b
+    m_ExpandedIDs: 000000003e74000040740000427400004474000046740000487400004a7400004c7400004e74000000ca9a3b
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -1222,10 +1220,10 @@ MonoBehaviour:
       m_Icon: {fileID: 0}
       m_ResourceFile: 
   m_ListAreaState:
-    m_SelectedInstanceIDs: 
-    m_LastClickedInstanceID: 0
+    m_SelectedInstanceIDs: b2880000
+    m_LastClickedInstanceID: 34994
     m_HadKeyboardFocusLastEvent: 0
-    m_ExpandedInstanceIDs: c62300005a5b000004670000887a0000
+    m_ExpandedInstanceIDs: c62300005a5b000004670000887a000000000000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
