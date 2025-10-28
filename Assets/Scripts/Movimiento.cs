@@ -43,7 +43,6 @@ public class Movimiento : MonoBehaviour
     public LayerMask escaleraLayer;
     public float velocidadEscalera = 3f;
     private bool enEscalera = false;
-    private bool subiendoEscalera = false;
 
     private Vector3 escalaOriginal;
 
