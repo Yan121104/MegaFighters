@@ -36,8 +36,8 @@ public class MovimientoBotInteligente : MonoBehaviour
     [SerializeField] private int direccion = 1; // 1 = derecha, -1 = izquierda
     public int Direccion
     {
-        get { return direccion; }
-        set { direccion = Mathf.Clamp(value, -1, 1); }
+        get => direccion;
+        set => direccion = Mathf.Clamp(value, -1, 1);
     }
 
     private float movimiento;
@@ -53,7 +53,7 @@ public class MovimientoBotInteligente : MonoBehaviour
 
     // --- Antiatasco ---
     private float tiempoAtascado = 0f;
-    private float tiempoMaxAtascado = 1.5f;
+    private float tiempoMaxAtascado = 1.2f;
     private Vector2 ultimaPosicion;
     private float tiempoProximoIntento = 0f;
 
@@ -62,7 +62,7 @@ public class MovimientoBotInteligente : MonoBehaviour
     public float rangoSaltoPlataforma = 2.5f;
 
     [Header("Seguridad ante vacío")]
-    public float distanciaSeguridadVacio = 1.5f; // Si el suelo está más lejos que esto, no avanza
+    public float distanciaSeguridadVacio = 1.5f;
     private bool evitarCaida = false;
 
     void Start()
@@ -81,15 +81,9 @@ public class MovimientoBotInteligente : MonoBehaviour
 
     void BuscarJugadorPrincipal()
     {
-        GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
-        foreach (var p in players)
-        {
-            if (p != gameObject)
-            {
-                jugadorObjetivo = p.transform;
-                break;
-            }
-        }
+        GameObject player = GameObject.FindGameObjectWithTag("Player");
+        if (player != null && player != gameObject)
+            jugadorObjetivo = player.transform;
     }
 
     void FixedUpdate()
@@ -110,88 +104,89 @@ public class MovimientoBotInteligente : MonoBehaviour
 
         float distanciaX = Mathf.Abs(jugadorObjetivo.position.x - transform.position.x);
         bool jugadorEnRango = distanciaX <= rangoDeteccion;
-
-        // --- Evaluar si hay suelo delante antes de avanzar ---
         evitarCaida = !HaySueloSeguroDelante();
 
         if (jugadorEnRango)
-        {
-            // --- PERSECUCIÓN INTELIGENTE ---
-            if (distanciaX > rangoAtaque)
-            {
-                int dirJugador = (jugadorObjetivo.position.x > transform.position.x) ? 1 : -1;
+            PerseguirJugador(distanciaX);
+        else
+            Patrullar();
 
-                // Solo persigue si no hay riesgo de caer al vacío
-                if (!evitarCaida)
-                {
-                    direccion = dirJugador;
-                    movimiento = direccion;
-                    velocidadActual = velocidadCorrer;
-                }
-                else
-                {
-                    movimiento = 0; // Detenerse si hay vacío
-                }
+        AplicarMovimiento();
+        ActualizarAnimaciones();
+        VerificarAtasco();
+    }
+
+    // --- PERSECUCIÓN ---
+    private void PerseguirJugador(float distanciaX)
+    {
+        if (distanciaX > rangoAtaque)
+        {
+            int dirJugador = (jugadorObjetivo.position.x > transform.position.x) ? 1 : -1;
+
+            if (!evitarCaida)
+            {
+                direccion = dirJugador;
+                movimiento = direccion;
+                velocidadActual = velocidadCorrer;
             }
             else
-            {
                 movimiento = 0;
-            }
         }
         else
+            movimiento = 0;
+    }
+
+    // --- PATRULLA ---
+    private void Patrullar()
+    {
+        velocidadActual = velocidadNormal;
+        movimiento = direccion;
+
+        RaycastHit2D obstaculo = Physics2D.Raycast(checkFrente.position, Vector2.right * direccion, distanciaObstaculo, obstaculoLayer);
+        BoxCollider2D col = GetComponent<BoxCollider2D>();
+        Vector3 bordeOffset = new Vector3((col.bounds.extents.x + 0.05f) * direccion, 0, 0);
+        bool bordeSeguro = Physics2D.Raycast(checkSuelo.position + bordeOffset, Vector2.down, distanciaBorde, sueloLayer);
+
+        if (!forzarMovimiento)
         {
-            // --- PATRULLA NORMAL ---
-            velocidadActual = velocidadNormal;
-            movimiento = direccion;
-
-            RaycastHit2D obstaculo = Physics2D.Raycast(checkFrente.position, Vector2.right * direccion, distanciaObstaculo, obstaculoLayer);
-            BoxCollider2D col = GetComponent<BoxCollider2D>();
-            Vector3 bordeOffset = new Vector3((col.bounds.extents.x + 0.05f) * direccion, 0, 0);
-            bool bordeSeguro = Physics2D.Raycast(checkSuelo.position + bordeOffset, Vector2.down, distanciaBorde, sueloLayer);
-
-            if (!forzarMovimiento)
+            if (!bordeSeguro && enSuelo)
             {
-                if (!bordeSeguro && enSuelo)
-                {
-                    if (!IntentarSaltarHaciaPlataforma())
-                        CambiarDireccion();
-                }
-
-                if (obstaculo.collider != null && enSuelo)
-                {
-                    Vector2 normal = obstaculo.normal;
-                    if (Mathf.Abs(normal.x) > 0.9f && Mathf.Abs(normal.y) < 0.2f)
-                    {
-                        if (Time.time > proximoSalto)
-                        {
-                            Saltar();
-                            proximoSalto = Time.time + cooldownSalto + Random.Range(0f, 2f);
-                        }
-                    }
-                }
-
-                DetectarYSepararBots();
+                if (!IntentarSaltarHaciaPlataforma())
+                    CambiarDireccion();
             }
-        }
 
-        // --- Movimiento final ---
+            if (obstaculo.collider != null && enSuelo)
+            {
+                if (Time.time > proximoSalto)
+                {
+                    Saltar();
+                    proximoSalto = Time.time + cooldownSalto + Random.Range(0f, 2f);
+                }
+            }
+
+            DetectarYSepararBots();
+        }
+    }
+
+    private void AplicarMovimiento()
+    {
         Vector2 velBase = new Vector2(movimiento * velocidadActual, rb.velocity.y);
         Vector2 velPlataforma = enSuelo ? plataformaVelocidad : ultimaInerciaPlataforma;
         rb.velocity = new Vector2(velBase.x + velPlataforma.x, velBase.y);
-
-        if (animator != null)
-        {
-            animator.SetFloat("Velocidad", Mathf.Abs(rb.velocity.x));
-            animator.SetBool("Saltando", !enSuelo);
-        }
 
         transform.localScale = new Vector3(
             direccion * Mathf.Abs(transform.localScale.x),
             transform.localScale.y,
             transform.localScale.z
         );
+    }
 
-        VerificarAtasco();
+    private void ActualizarAnimaciones()
+    {
+        if (animator == null) return;
+
+        animator.SetFloat("Velocidad", Mathf.Abs(rb.velocity.x));
+        animator.SetBool("Saltando", !enSuelo);
     }
 
     private bool IntentarSaltarHaciaPlataforma()
@@ -227,8 +222,6 @@ public class MovimientoBotInteligente : MonoBehaviour
 
         Vector3 origen = checkSuelo.position + Vector3.right * direccion * 0.6f;
         RaycastHit2D sueloDetectado = Physics2D.Raycast(origen, Vector2.down, distanciaSeguridadVacio, sueloLayer);
-
-        // Si no hay suelo o el suelo está demasiado lejos, no es seguro
         return sueloDetectado.collider != null;
     }
 
@@ -239,21 +232,15 @@ public class MovimientoBotInteligente : MonoBehaviour
                       + Vector2.up * fuerzaSalto;
     }
 
-    private void CambiarDireccion()
-    {
-        direccion *= -1;
-    }
+    private void CambiarDireccion() => direccion *= -1;
 
     private void DetectarYSepararBots()
     {
         Collider2D botCercano = Physics2D.OverlapCircle(transform.position, distanciaBot, botLayer);
-        if (botCercano != null && botCercano.gameObject != gameObject)
+        if (botCercano != null && botCercano.gameObject != gameObject && Time.time > tiempoProximoIntento)
         {
-            if (Time.time > tiempoProximoIntento)
-            {
-                CambiarDireccion();
-                tiempoProximoIntento = Time.time + 0.8f;
-            }
+            CambiarDireccion();
+            tiempoProximoIntento = Time.time + 0.8f;
         }
     }
 
@@ -264,41 +251,34 @@ public class MovimientoBotInteligente : MonoBehaviour
         if (distancia < 0.05f)
         {
             tiempoAtascado += Time.deltaTime;
-            if (tiempoAtascado > tiempoMaxAtascado)
+            if (tiempoAtascado > tiempoMaxAtascado && enSuelo)
             {
-                if (enSuelo)
+                if (Random.value < 0.7f)
+                    CambiarDireccion();
+                else if (Time.time > proximoSalto)
                 {
-                    if (Random.value < 0.7f)
-                        CambiarDireccion();
-                    else if (Time.time > proximoSalto)
-                    {
-                        Saltar();
-                        proximoSalto = Time.time + cooldownSalto + Random.Range(0.5f, 1.5f);
-                    }
+                    Saltar();
+                    proximoSalto = Time.time + cooldownSalto + Random.Range(0.5f, 1.5f);
                 }
+
                 tiempoAtascado = 0f;
             }
         }
         else
-        {
             tiempoAtascado = 0f;
-        }
 
         ultimaPosicion = transform.position;
     }
 
+    // --- Colisiones ---
     void OnCollisionEnter2D(Collision2D other)
     {
         if (!forzarMovimiento && ((1 << other.gameObject.layer) & botLayer) != 0)
         {
             foreach (ContactPoint2D contacto in other.contacts)
             {
-                if (direccion == 1 && contacto.normal.x < -0.5f)
-                {
-                    CambiarDireccion();
-                    break;
-                }
-                else if (direccion == -1 && contacto.normal.x > 0.5f)
+                if ((direccion == 1 && contacto.normal.x < -0.5f) ||
+                    (direccion == -1 && contacto.normal.x > 0.5f))
                 {
                     CambiarDireccion();
                     break;
@@ -326,6 +306,7 @@ public class MovimientoBotInteligente : MonoBehaviour
         }
     }
 
+    // --- Gizmos ---
     void OnDrawGizmosSelected()
     {
         if (checkSuelo != null)
@@ -338,7 +319,7 @@ public class MovimientoBotInteligente : MonoBehaviour
         {
             Gizmos.color = Color.green;
             Gizmos.DrawLine(checkFrente.position,
-                            checkFrente.position + Vector3.right * direccion * distanciaObstaculo);
+                checkFrente.position + Vector3.right * direccion * distanciaObstaculo);
         }
 
         Gizmos.color = Color.red;
@@ -349,10 +330,8 @@ public class MovimientoBotInteligente : MonoBehaviour
 
         Gizmos.color = Color.cyan;
         if (checkBorde != null)
-        {
             Gizmos.DrawLine(checkBorde.position,
-                            checkBorde.position + (Vector3)(Vector2.down + Vector2.right * direccion * 0.5f) * rangoSaltoPlataforma);
-        }
+                checkBorde.position + (Vector3)(Vector2.down + Vector2.right * direccion * 0.5f) * rangoSaltoPlataforma);
 
         Gizmos.color = Color.magenta;
         Vector3 origen = checkSuelo != null ? checkSuelo.position + Vector3.right * direccion * 0.6f : transform.position;
@@ -384,4 +363,60 @@ public class MovimientoBotInteligente : MonoBehaviour
         yield return new WaitForSeconds(tiempo);
         DesactivarPortal();
     }
+
+    // --- RECOGER ARMAS AUTOMÁTICAMENTE ---
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        // Verifica si el objeto es un arma
+        if (collision.gameObject.GetComponent<WeaponPickup>() != null)
+        {
+            RecogerArmaBot(collision.gameObject);
+        }
+    }
+
+    private void RecogerArmaBot(GameObject arma)
+    {
+        BotWeaponController wc = GetComponent<BotWeaponController>();
+        if (wc == null) return;
+
+        string nombreArma = arma.name.ToLower();
+
+        // --- Detectar tipo de arma (usa el enum del bot) ---
+        if (nombreArma.Contains("hacha"))
+            wc.EquipWeapon(BotWeaponController.WeaponType.Hacha);
+        else if (nombreArma.Contains("sable"))
+            wc.EquipWeapon(BotWeaponController.WeaponType.Sable);
+        else if (nombreArma.Contains("machete"))
+            wc.EquipWeapon(BotWeaponController.WeaponType.Machete);
+        else if (nombreArma.Contains("basuca"))
+            wc.EquipWeapon(BotWeaponController.WeaponType.Basuca);
+        else if (nombreArma.Contains("desert"))
+            wc.EquipWeapon(BotWeaponController.WeaponType.Desert);
+        else if (nombreArma.Contains("escopeta"))
+            wc.EquipWeapon(BotWeaponController.WeaponType.Escopeta);
+        else if (nombreArma.Contains("lanzallamas"))
+            wc.EquipWeapon(BotWeaponController.WeaponType.Lanzallamas);
+        else if (nombreArma.Contains("m4a1"))
+            wc.EquipWeapon(BotWeaponController.WeaponType.M4a1);
+        else if (nombreArma.Contains("miniusi"))
+            wc.EquipWeapon(BotWeaponController.WeaponType.Miniusi);
+        else if (nombreArma.Contains("usp"))
+            wc.EquipWeapon(BotWeaponController.WeaponType.Usp);
+        else if (nombreArma.Contains("snyper"))
+            wc.EquipWeapon(BotWeaponController.WeaponType.Snyper);
+
+        // --- Efecto de sonido (opcional) ---
+        WeaponPickup pickup = arma.GetComponent<WeaponPickup>();
+        if (pickup != null && pickup.pickupSound != null)
+        {
+            AudioSource.PlayClipAtPoint(pickup.pickupSound, transform.position, 1f);
+        }
+
+        // Destruye el arma recogida
+        Destroy(arma, 0.3f);
+
+        Debug.Log($"🤖 {gameObject.name} recogió {arma.name}");
+    }
+
+
 }

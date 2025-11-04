@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 [RequireComponent(typeof(Collider2D))]
 public class WaterCollision : MonoBehaviour
@@ -7,16 +7,21 @@ public class WaterCollision : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.CompareTag("Player")) // Aseg�rate que tu personaje tenga el tag Player
+        if (collision.CompareTag("Player")) // Jugador o bot
         {
             Rigidbody2D rb = collision.attachedRigidbody;
             if (rb != null)
             {
-                // Tomamos la posici�n horizontal del impacto
                 float xPos = collision.transform.position.x;
-
-                // Llamamos al splash en ese punto con fuerza proporcional a la velocidad de ca�da
                 waterController.MakeSplashAtPosition(xPos, rb.velocity.y * 0.5f);
+            }
+
+            // 💧 Obtener el sistema de vida del que cayó al agua
+            HealthSystem hs = collision.GetComponent<HealthSystem>();
+            if (hs != null && !hs.isDead)
+            {
+                Debug.Log($"🌊 {collision.name} cayó al agua y murió instantáneamente.");
+                hs.TakeDamage(hs.maxHealth, gameObject); // Mata instantáneamente
             }
         }
     }

@@ -25,7 +25,6 @@ public class SpawnBots : MonoBehaviour
 
     void GenerarBotsEnPlataformas()
     {
-        // Buscar plataformas dentro del rango usando OverlapBoxNonAlloc (no genera GC)
         int numPlataformas = Physics2D.OverlapBoxNonAlloc(Vector2.zero, rangoBusqueda, 0f, bufferPlataformas, sueloLayer);
 
         if (numPlataformas == 0)
@@ -34,25 +33,27 @@ public class SpawnBots : MonoBehaviour
             return;
         }
 
-        // Crear cada bot con una posición diferente
         for (int i = 0; i < cantidadBots; i++)
         {
-            // Elegir una plataforma aleatoria
             Collider2D plataforma = bufferPlataformas[Random.Range(0, numPlataformas)];
-
             if (plataforma == null) continue;
 
-            // Obtener los límites de la plataforma
             Bounds b = plataforma.bounds;
-
-            // Calcular una posición aleatoria dentro de la plataforma
             float x = Random.Range(b.min.x + margenBorde, b.max.x - margenBorde);
             float y = b.max.y + alturaOffset;
 
             Vector2 spawnPos = new Vector2(x, y);
 
             // Instanciar el bot
-            Instantiate(botPrefab, spawnPos, Quaternion.identity);
+            GameObject nuevoBot = Instantiate(botPrefab, spawnPos, Quaternion.identity);
+
+            // Asignar etiqueta
+            BotIdentifier id = nuevoBot.GetComponent<BotIdentifier>();
+            if (id != null)
+            {
+                string etiqueta = "B" + (i + 1); // Ejemplo: B1, B2, B3...
+                id.SetEtiqueta(etiqueta);
+            }
         }
 
         Debug.Log($"✅ Se generaron {cantidadBots} bots en {numPlataformas} plataformas detectadas.");

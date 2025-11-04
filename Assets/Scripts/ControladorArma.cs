@@ -60,6 +60,20 @@ public class WeaponController : MonoBehaviour
     public AudioClip sableSound;
     public AudioClip punheteSound; // opcional: sonido para el puñete sin arma
 
+    [Header("Punto de Ataque Cuerpo a Cuerpo")]
+    public Transform meleePoint;
+
+    [Tooltip("Radio del golpe cuerpo a cuerpo.")]
+    public float meleeRange = 0.7f;
+
+    [Header("Daño por Herramienta")]
+    public int damagePuñete = 10;
+    public int damageMachete = 25;
+    public int damageHacha = 35;
+    public int damageSable = 20;
+
+    [Tooltip("Qué capas pueden recibir daño cuerpo a cuerpo.")]
+    public LayerMask damageableLayers;
 
     // 🔸 Diccionario de munición
     private Dictionary<WeaponType, int> maxAmmo = new Dictionary<WeaponType, int>()
@@ -393,6 +407,23 @@ public class WeaponController : MonoBehaviour
         AudioClip sound = GetMeleeSound(tool);
         if (sound != null && audioSource != null)
             audioSource.PlayOneShot(sound);
+
+        // ⚔️ Detectar enemigos en el rango de ataque
+        Collider2D[] hits = Physics2D.OverlapCircleAll(meleePoint.position, meleeRange, damageableLayers);
+
+        int damage = GetMeleeDamage(tool);
+
+        foreach (Collider2D hit in hits)
+        {
+            if (hit.gameObject == gameObject) continue;
+
+            HealthSystem targetHealth = hit.GetComponent<HealthSystem>();
+            if (targetHealth != null)
+            {
+                targetHealth.TakeDamage(damage, gameObject);
+                Debug.Log($"💥 {gameObject.name} golpeó a {hit.gameObject.name} con {tool}, causando {damage} de daño.");
+            }
+        }
     }
 
     void Reload(WeaponType weapon)
@@ -482,6 +513,30 @@ public class WeaponController : MonoBehaviour
             case WeaponType.Machete: return macheteSound;
             case WeaponType.Sable: return sableSound;
             default: return null;
+        }
+    }
+
+    int GetMeleeDamage(WeaponType tool)
+    {
+        switch (tool)
+        {
+            case WeaponType.Hacha:
+                return damageHacha;
+            case WeaponType.Machete:
+                return damageMachete;
+            case WeaponType.Sable:
+                return damageSable;
+            default:
+                return damagePuñete; // si no hay arma, usa daño del puñete
+        }
+    }
+
+    void OnDrawGizmosSelected()
+    {
+        if (meleePoint != null)
+        {
+            Gizmos.color = Color.yellow;
+            Gizmos.DrawWireSphere(meleePoint.position, meleeRange);
         }
     }
 

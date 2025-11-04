@@ -10,73 +10,81 @@ public class WeaponPickup : MonoBehaviour
 
     void Update()
     {
-        if (jugadorCerca && Input.GetKeyDown(KeyCode.X))
+        // 🎮 Solo el jugador humano necesita presionar X
+        if (jugadorCerca && jugador != null && jugador.GetComponent<MovimientoBotInteligente>() == null)
         {
-            RecogerObjeto();
+            if (Input.GetKeyDown(KeyCode.X))
+            {
+                RecogerObjeto(jugador);
+            }
         }
     }
 
-    private void RecogerObjeto()
+    private void RecogerObjeto(GameObject receptor)
     {
-        if (jugador == null) return;
+        if (receptor == null) return;
 
-        WeaponController wc = jugador.GetComponent<WeaponController>();
+        WeaponController wc = receptor.GetComponent<WeaponController>();
+        if (wc == null) return;
 
-        if (wc != null)
+        string[] herramientas = { "Hacha", "Sable", "Machete" };
+        bool esHerramienta = false;
+
+        // 🪓 Detectar herramientas cuerpo a cuerpo
+        foreach (string herramienta in herramientas)
         {
-            string[] herramientas = { "Hacha", "Sable", "Machete" };
-            bool esHerramienta = false;
-
-            // 🪓 Detectar herramientas cuerpo a cuerpo
-            foreach (string herramienta in herramientas)
+            if (gameObject.name.ToLower().Contains(herramienta.ToLower()))
             {
-                if (gameObject.name.ToLower().Contains(herramienta.ToLower()))
-                {
-                    esHerramienta = true;
-                    wc.EquipWeapon((WeaponController.WeaponType)System.Enum.Parse(typeof(WeaponController.WeaponType), herramienta, true));
-                    break;
-                }
+                esHerramienta = true;
+                wc.EquipWeapon((WeaponController.WeaponType)System.Enum.Parse(typeof(WeaponController.WeaponType), herramienta, true));
+                break;
             }
-
-            // 🔫 Detectar armas de fuego
-            if (!esHerramienta)
-            {
-                if (gameObject.name.ToLower().Contains("basuca"))
-                    wc.EquipWeapon(WeaponController.WeaponType.Basuca);
-                else if (gameObject.name.ToLower().Contains("desert"))
-                    wc.EquipWeapon(WeaponController.WeaponType.Desert);
-                else if (gameObject.name.ToLower().Contains("escopeta"))
-                    wc.EquipWeapon(WeaponController.WeaponType.Escopeta);
-                else if (gameObject.name.ToLower().Contains("lanzallamas"))
-                    wc.EquipWeapon(WeaponController.WeaponType.Lanzallamas);
-                else if (gameObject.name.ToLower().Contains("m4a1"))
-                    wc.EquipWeapon(WeaponController.WeaponType.M4a1);
-                else if (gameObject.name.ToLower().Contains("miniusi"))
-                    wc.EquipWeapon(WeaponController.WeaponType.Miniusi);
-                else if (gameObject.name.ToLower().Contains("usp"))
-                    wc.EquipWeapon(WeaponController.WeaponType.Usp);
-                else if (gameObject.name.ToLower().Contains("snyper"))
-                    wc.EquipWeapon(WeaponController.WeaponType.Snyper);
-            }
-
-            // 🎵 Reproduce el sonido aunque el objeto se destruya
-            if (pickupSound != null)
-            {
-                AudioSource.PlayClipAtPoint(pickupSound, transform.position, 1f);
-            }
-
-            Debug.Log($"{jugador.name} recogió {gameObject.name}");
-
-            Destroy(gameObject, 0.5f); // le da un pequeño margen (50ms)
         }
+
+        // 🔫 Detectar armas de fuego
+        if (!esHerramienta)
+        {
+            string n = gameObject.name.ToLower();
+            if (n.Contains("basuca"))
+                wc.EquipWeapon(WeaponController.WeaponType.Basuca);
+            else if (n.Contains("desert"))
+                wc.EquipWeapon(WeaponController.WeaponType.Desert);
+            else if (n.Contains("escopeta"))
+                wc.EquipWeapon(WeaponController.WeaponType.Escopeta);
+            else if (n.Contains("lanzallamas"))
+                wc.EquipWeapon(WeaponController.WeaponType.Lanzallamas);
+            else if (n.Contains("m4a1"))
+                wc.EquipWeapon(WeaponController.WeaponType.M4a1);
+            else if (n.Contains("miniusi"))
+                wc.EquipWeapon(WeaponController.WeaponType.Miniusi);
+            else if (n.Contains("usp"))
+                wc.EquipWeapon(WeaponController.WeaponType.Usp);
+            else if (n.Contains("snyper"))
+                wc.EquipWeapon(WeaponController.WeaponType.Snyper);
+        }
+
+        // 🎵 Reproduce sonido
+        if (pickupSound != null)
+            AudioSource.PlayClipAtPoint(pickupSound, transform.position, 1f);
+
+        Debug.Log($"{receptor.name} recogió {gameObject.name}");
+        Destroy(gameObject, 0.5f);
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.GetComponent<WeaponController>() != null)
+        // 🔍 Detectar si es jugador o bot
+        WeaponController wc = collision.GetComponent<WeaponController>();
+        if (wc != null)
         {
             jugadorCerca = true;
             jugador = collision.gameObject;
+
+            // 🤖 Si es un bot, recoge automáticamente
+            if (jugador.GetComponent<MovimientoBotInteligente>() != null)
+            {
+                RecogerObjeto(jugador);
+            }
         }
     }
 

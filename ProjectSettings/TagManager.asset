@@ -5,11 +5,9 @@ TagManager:
   serializedVersion: 2
   tags:
   - Jugador
-  - Bot1
-  - Bot2
-  - Bot3
-  - Bot4
-  - Bot5
+  - Spring
+  - Bot
+  - Water
   layers:
   - Default
   - TransparentFX
@@ -19,7 +17,7 @@ TagManager:
   - UI
   - Bot
   - Escalera
-  - 
+  - Player
   - 
   - 
   - 
