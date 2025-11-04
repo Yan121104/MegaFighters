@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.SceneManagement;
 using TMPro;
-using System.Collections;
 
 [RequireComponent(typeof(Rigidbody2D))]
 public class HealthSystem : MonoBehaviour
@@ -37,10 +36,6 @@ public class HealthSystem : MonoBehaviour
     [Tooltip("Texto que se mostrará cuando el jugador muera (usar TextMeshProUGUI).")]
     public TextMeshProUGUI gameOverText;
 
-    [Header("Transición de Nivel")]
-    [Tooltip("Imagen negra para el fundido al cambiar de nivel.")]
-    public CanvasGroup fadeImage;
-
     public bool isDead { get; private set; } = false;
     private bool controlsDisabled = false;
 
@@ -63,7 +58,6 @@ public class HealthSystem : MonoBehaviour
 
     void Update()
     {
-        // Si está muerto, solo escucha ENTER para reiniciar
         if (isDead)
         {
             if (Input.GetKeyDown(KeyCode.Return))
@@ -130,35 +124,13 @@ public class HealthSystem : MonoBehaviour
         {
             Debug.Log("💀 El jugador principal ha muerto. (GAME OVER)");
 
-            // 🔒 Desactivar control del jugador
+            // Desactivar scripts de movimiento
             MonoBehaviour[] scripts = GetComponents<MonoBehaviour>();
             foreach (MonoBehaviour script in scripts)
             {
                 if (script != this && script.enabled && script.GetType().Name.Contains("Movimiento"))
-                {
-                    script.enabled = false; // Desactiva scripts de movimiento
-                }
+                    script.enabled = false;
             }
-
-            if (gameOverText != null)
-            {
-                gameOverText.text = "GAME OVER\nPresiona ENTER para reiniciar";
-                gameOverText.gameObject.SetActive(true);
-            }
-        }
-
-
-        Debug.Log($"☠️ {gameObject.name} fue eliminado por {killer.name}");
-
-        if (deathSound != null)
-            deathSound.Play();
-
-        if (animator != null)
-            animator.SetTrigger("Die");
-
-        if (playerCanvasHealthBar != null)
-        {
-            Debug.Log("💀 El jugador principal ha muerto. (GAME OVER)");
 
             if (gameOverText != null)
             {
@@ -169,14 +141,17 @@ public class HealthSystem : MonoBehaviour
         else
         {
             Debug.Log($"🤖 Bot eliminado: {gameObject.name}");
-
-            CheckAllBotsDead(); // ✅ Se ejecuta mientras el bot aún existe
-
-            Destroy(gameObject, 0.5f); // luego lo destruyes
+            CheckAllBotsDead();
+            Destroy(gameObject, 0.5f);
         }
+
+        if (deathSound != null)
+            deathSound.Play();
+
+        if (animator != null)
+            animator.SetTrigger("Die");
     }
 
-    // ← Detección del agua (Layer Water)
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (!isDead && collision.gameObject.layer == LayerMask.NameToLayer("Water"))
@@ -191,8 +166,8 @@ public class HealthSystem : MonoBehaviour
     private void CheckAllBotsDead()
     {
         GameObject[] allPlayers = GameObject.FindGameObjectsWithTag("Player");
-
         int botsVivos = 0;
+
         foreach (GameObject p in allPlayers)
         {
             HealthSystem hs = p.GetComponent<HealthSystem>();
@@ -202,62 +177,19 @@ public class HealthSystem : MonoBehaviour
 
         if (botsVivos == 0)
         {
-            Debug.Log("🎯 Todos los bots han sido eliminados. Iniciando fundido antes de cargar 'Nivel2'...");
+            Debug.Log("🎯 Todos los bots han sido eliminados. Iniciando transición a Nivel2...");
 
-            // 🧩 Buscar al jugador principal (el que tiene la barra en el Canvas)
-            HealthSystem player = null;
-            foreach (GameObject p in allPlayers)
+            // Usar FadeManager global para cargar escena
+            if (FadeManager.Instance != null)
             {
-                HealthSystem hs = p.GetComponent<HealthSystem>();
-                if (hs != null && hs.playerCanvasHealthBar != null)
-                {
-                    player = hs;
-                    break;
-                }
-            }
-
-            // 🩵 Si se encontró el jugador, usa su fadeImage
-            if (player != null && player.fadeImage != null)
-            {
-                player.StartCoroutine(player.FadeAndLoadScene("Nivel2"));
+                FadeManager.Instance.FadeToScene("Nivel2", 2f, 2f, 0.5f);
             }
             else
             {
-                Debug.LogWarning("⚠️ No se encontró la imagen de fundido en el jugador. Cargando escena directamente.");
                 SceneManager.LoadScene("Nivel2");
             }
         }
     }
-
-
-    private IEnumerator FadeAndLoadScene(string sceneName)
-    {
-        if (fadeImage == null)
-        {
-            Debug.LogWarning("⚠️ No se asignó la imagen de fundido (fadeImage). Cargando escena directamente.");
-            SceneManager.LoadScene(sceneName);
-            yield break;
-        }
-
-        fadeImage.gameObject.SetActive(true);
-
-        // 👇 Evita que se destruya el fade al cambiar de escena
-        DontDestroyOnLoad(fadeImage.transform.root.gameObject);
-
-        float duration = 1.5f;
-        float elapsed = 0f;
-
-        while (elapsed < duration)
-        {
-            elapsed += Time.deltaTime;
-            fadeImage.alpha = Mathf.Clamp01(elapsed / duration);
-            yield return null;
-        }
-
-        yield return new WaitForSeconds(0.3f);
-        SceneManager.LoadScene(sceneName);
-    }
-
 
     void OnDrawGizmosSelected()
     {

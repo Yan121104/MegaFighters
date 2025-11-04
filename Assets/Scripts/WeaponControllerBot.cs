@@ -62,6 +62,13 @@ public class BotWeaponController : MonoBehaviour
     public int damageSable = 20;
     public LayerMask damageableLayers;
 
+    [Header("Detección del Jugador")]
+    public Transform objetivo;           // El jugador principal (asígnalo en el Inspector)
+    public float rangoDeteccion = 8f;    // Distancia para atacar con armas
+    public float rangoMelee = 1.5f;      // Distancia para ataque cuerpo a cuerpo
+
+    private bool jugadorCerca = false;   // Estado: ¿jugador dentro del rango?
+
     private Dictionary<WeaponType, int> maxAmmo = new Dictionary<WeaponType, int>()
     {
         { WeaponType.Basuca, 5 }, { WeaponType.Desert, 30 }, { WeaponType.Escopeta, 12 },
@@ -91,28 +98,75 @@ public class BotWeaponController : MonoBehaviour
     void Start()
     {
         animador = GetComponentInChildren<Animator>();
+
+        // Inicializa las municiones
         foreach (var kvp in maxAmmo)
             currentAmmo[kvp.Key] = kvp.Value;
 
-        InvokeRepeating(nameof(AutoAttack), 1f, 0.1f); // IA disparo/melee automático
+        // 🔹 Si el objetivo no está asignado (porque el prefab no lo permite),
+        // lo busca automáticamente en la escena
+        if (objetivo == null)
+        {
+            GameObject jugador = GameObject.Find("Jugador");
+            if (jugador != null)
+            {
+                objetivo = jugador.transform;
+            }
+            else
+            {
+                Debug.LogWarning("⚠️ No se encontró el objeto 'Jugador' en la escena.");
+            }
+        }
+
+        // Revisa periódicamente si el jugador está cerca
+        InvokeRepeating(nameof(VerificarJugador), 0f, 0.2f);
     }
 
-    // 🔸 DISPARO / ATAQUE AUTOMÁTICO
+
+    void VerificarJugador()
+    {
+        if (objetivo == null) return;
+
+        float distancia = Vector2.Distance(transform.position, objetivo.position);
+        bool estabaCerca = jugadorCerca;
+
+        jugadorCerca = distancia <= rangoDeteccion;
+
+        // Solo atacar si el jugador está dentro del rango
+        if (jugadorCerca)
+        {
+            AutoAttack();
+        }
+        else
+        {
+            // Detiene animaciones si estaba atacando
+            if (animador != null && estabaCerca)
+            {
+                animador.SetBool("isShooting", false);
+            }
+        }
+    }
+
+    // 🔸 DISPARO / ATAQUE AUTOMÁTICO (solo si el jugador está cerca)
     void AutoAttack()
     {
-        // 🔫 Arma de fuego
-        if (currentWeapon != WeaponType.None && !EsHerramienta(currentWeapon))
+        if (objetivo == null) return; // Si no hay jugador asignado, no hace nada
+
+        // Calcula la distancia entre el bot y el jugador
+        float distancia = Vector2.Distance(transform.position, objetivo.position);
+
+        // 🔫 Arma de fuego: solo dispara si el jugador está dentro del rango de detección
+        if (currentWeapon != WeaponType.None && !EsHerramienta(currentWeapon) && distancia <= rangoDeteccion)
         {
             float rate = fireRates.ContainsKey(currentWeapon) ? fireRates[currentWeapon] : 0.25f;
 
             if (Time.time >= nextFireTime)
             {
-                // 🎯 Animaciones de disparo
+                // 🎯 Animación de disparo
                 if (animador != null)
                 {
                     animador.SetBool("isShooting", true);
                     animador.SetFloat("weaponID", (float)currentWeapon);
-                    // 🔹 Eliminado: animador.SetTrigger("ShootOnce");
                 }
 
                 // 🔹 Acción de disparo
@@ -124,13 +178,13 @@ public class BotWeaponController : MonoBehaviour
                 // ⏱️ Control de cadencia
                 nextFireTime = Time.time + rate;
 
-                // ⏹️ Detener animación luego de un corto tiempo
+                // ⏹️ Detiene la animación un poco después del disparo
                 Invoke(nameof(StopShootingAnimation), rate / 1.2f);
             }
         }
 
-        // 🪓 Herramienta cuerpo a cuerpo
-        else if (currentTool != WeaponType.None)
+        // 🪓 Herramienta cuerpo a cuerpo: solo ataca si el jugador está muy cerca
+        else if (currentTool != WeaponType.None && distancia <= rangoMelee)
         {
             if (!golpeEnCurso)
             {
@@ -142,8 +196,14 @@ public class BotWeaponController : MonoBehaviour
                 MeleeAttack(currentTool);
             }
         }
+        else
+        {
+            // Si el jugador está fuera del rango, detiene animación de disparo
+            if (animador != null)
+                animador.SetBool("isShooting", false);
+        }
 
-        // 👊 Mostrar segundo frame de golpe (efecto visual)
+        // 👊 Mostrar segundo frame del golpe (efecto visual del puñete)
         if (mostrandoSegundoFrame && Time.time - tiempoFrameActual >= duracionFrame)
         {
             int spriteIndex = indiceGolpe * 2 + 1;

@@ -65,6 +65,12 @@ public class MovimientoBotInteligente : MonoBehaviour
     public float distanciaSeguridadVacio = 1.5f;
     private bool evitarCaida = false;
 
+    [Header("Exploración Automática")]
+    public float tiempoCambioDireccion = 3f;
+    private float tiempoUltimoCambioDireccion = 0f;
+    private float tiempoQuietoMax = 2.5f;
+    private float tiempoQuietoActual = 0f;
+
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -77,6 +83,9 @@ public class MovimientoBotInteligente : MonoBehaviour
         ultimaPosicion = transform.position;
 
         BuscarJugadorPrincipal();
+
+        tiempoCambioDireccion += Random.Range(-1f, 1f);
+        tiempoQuietoMax += Random.Range(-1f, 0.5f);
     }
 
     void BuscarJugadorPrincipal()
@@ -136,7 +145,6 @@ public class MovimientoBotInteligente : MonoBehaviour
             movimiento = 0;
     }
 
-    // --- PATRULLA ---
     private void Patrullar()
     {
         velocidadActual = velocidadNormal;
@@ -147,6 +155,7 @@ public class MovimientoBotInteligente : MonoBehaviour
         Vector3 bordeOffset = new Vector3((col.bounds.extents.x + 0.05f) * direccion, 0, 0);
         bool bordeSeguro = Physics2D.Raycast(checkSuelo.position + bordeOffset, Vector2.down, distanciaBorde, sueloLayer);
 
+        // Si no hay suelo o hay un obstáculo, decide qué hacer
         if (!forzarMovimiento)
         {
             if (!bordeSeguro && enSuelo)
@@ -164,7 +173,38 @@ public class MovimientoBotInteligente : MonoBehaviour
                 }
             }
 
+            // Si se topa con otro bot
             DetectarYSepararBots();
+
+            // --- 🧠 Exploración aleatoria ---
+            if (Time.time - tiempoUltimoCambioDireccion > tiempoCambioDireccion)
+            {
+                // 30% de probabilidad de cambiar dirección aunque no haya obstáculo
+                if (Random.value < 0.3f)
+                    CambiarDireccion();
+
+                tiempoUltimoCambioDireccion = Time.time;
+            }
+
+            // --- Si está demasiado quieto, forzar movimiento ---
+            if (Mathf.Abs(rb.velocity.x) < 0.1f && enSuelo)
+            {
+                tiempoQuietoActual += Time.deltaTime;
+                if (tiempoQuietoActual > tiempoQuietoMax)
+                {
+                    // Cambiar dirección o saltar aleatoriamente
+                    if (Random.value < 0.5f)
+                        CambiarDireccion();
+                    else
+                        Saltar();
+
+                    tiempoQuietoActual = 0f;
+                }
+            }
+            else
+            {
+                tiempoQuietoActual = 0f;
+            }
         }
     }
 

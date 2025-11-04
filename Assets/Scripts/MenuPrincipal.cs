@@ -9,18 +9,6 @@ public class MenuPrincipal : MonoBehaviour
         SceneManager.LoadScene("Nivel1");
     }
 
-    public void AbrirOpciones()
-    {
-        // Aquí puedes abrir un panel de opciones
-        Debug.Log("Opciones abiertas");
-    }
-
-    public void VerCreditos()
-    {
-        // Muestra los créditos o carga otra escena
-        Debug.Log("Mostrando créditos...");
-    }
-
     public void Salir()
     {
         Debug.Log("Saliendo del juego...");
