@@ -177,16 +177,16 @@ public class HealthSystem : MonoBehaviour
 
         if (botsVivos == 0)
         {
-            Debug.Log("🎯 Todos los bots han sido eliminados. Iniciando transición a Nivel2...");
+            Debug.Log("🎯 Todos los bots han sido eliminados. Pasando al siguiente nivel...");
 
-            // Usar FadeManager global para cargar escena
-            if (FadeManager.Instance != null)
+            if (GameManager.Instance != null)
             {
-                FadeManager.Instance.FadeToScene("Nivel2", 2f, 2f, 0.5f);
+                GameManager.Instance.LoadNextLevel();
             }
             else
             {
-                SceneManager.LoadScene("Nivel2");
+                // Fallback si no hay GameManager
+                SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
             }
         }
     }

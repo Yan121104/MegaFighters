@@ -15,29 +15,21 @@ public class FadeManager : MonoBehaviour
         if (Instance == null)
         {
             Instance = this;
-            DontDestroyOnLoad(gameObject);
+            DontDestroyOnLoad(gameObject); // Mantener todo el FadeManager entre escenas
+            if (fadeImage != null)
+            {
+                DontDestroyOnLoad(fadeImage.gameObject); // Mantener el CanvasGroup también
+                fadeImage.alpha = 0f;
+                fadeImage.gameObject.SetActive(false);
+            }
         }
         else
         {
             Destroy(gameObject);
             return;
         }
-
-        // Inicializar fade invisible
-        if (fadeImage != null)
-        {
-            fadeImage.alpha = 0f;
-            fadeImage.gameObject.SetActive(false);
-        }
     }
 
-    /// <summary>
-    /// Llama para hacer la transición a otra escena con fade cinematográfico.
-    /// </summary>
-    /// <param name="sceneName">Nombre de la escena a cargar</param>
-    /// <param name="fadeInDuration">Tiempo para oscurecer</param>
-    /// <param name="fadeOutDuration">Tiempo para revelar</param>
-    /// <param name="delayBeforeLoad">Delay antes de cargar la escena</param>
     public void FadeToScene(string sceneName, float fadeInDuration = 1f, float fadeOutDuration = 1.5f, float delayBeforeLoad = 0.2f)
     {
         StartCoroutine(FadeCoroutine(sceneName, fadeInDuration, fadeOutDuration, delayBeforeLoad));
@@ -53,39 +45,31 @@ public class FadeManager : MonoBehaviour
 
         fadeImage.gameObject.SetActive(true);
 
-        // -----------------------------
-        // FADE IN (oscurecer)
-        // -----------------------------
+        // FADE IN
         float elapsed = 0f;
         while (elapsed < fadeInDuration)
         {
             elapsed += Time.deltaTime;
             float t = Mathf.Clamp01(elapsed / fadeInDuration);
             fadeImage.alpha = Mathf.SmoothStep(0f, 1f, t);
-            yield return new WaitForEndOfFrame();
+            yield return null;
         }
-
         fadeImage.alpha = 1f;
 
-        // Pequeño delay para que el fade in se vea completo
         yield return new WaitForSeconds(delayBeforeLoad);
 
-        // -----------------------------
         // Cargar escena
-        // -----------------------------
         SceneManager.LoadScene(sceneName);
-        yield return null; // esperar un frame para asegurar carga
+        yield return null;
 
-        // -----------------------------
-        // FADE OUT (revelar escena)
-        // -----------------------------
+        // FADE OUT
         elapsed = 0f;
         while (elapsed < fadeOutDuration)
         {
             elapsed += Time.deltaTime;
             float t = Mathf.Clamp01(elapsed / fadeOutDuration);
             fadeImage.alpha = Mathf.SmoothStep(1f, 0f, t);
-            yield return new WaitForEndOfFrame();
+            yield return null;
         }
 
         fadeImage.alpha = 0f;

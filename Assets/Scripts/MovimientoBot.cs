@@ -150,20 +150,35 @@ public class MovimientoBotInteligente : MonoBehaviour
         velocidadActual = velocidadNormal;
         movimiento = direccion;
 
-        RaycastHit2D obstaculo = Physics2D.Raycast(checkFrente.position, Vector2.right * direccion, distanciaObstaculo, obstaculoLayer);
+        // --- Detectar obstáculos, ignorando portales ---
+        int obstaculoMaskSinPortal = obstaculoLayer & ~(1 << LayerMask.NameToLayer("PortalLayer"));
+        RaycastHit2D obstaculo = Physics2D.Raycast(checkFrente.position, Vector2.right * direccion, distanciaObstaculo, obstaculoMaskSinPortal);
+
+        // --- Detectar borde y portales como "suelo seguro" ---
         BoxCollider2D col = GetComponent<BoxCollider2D>();
         Vector3 bordeOffset = new Vector3((col.bounds.extents.x + 0.05f) * direccion, 0, 0);
-        bool bordeSeguro = Physics2D.Raycast(checkSuelo.position + bordeOffset, Vector2.down, distanciaBorde, sueloLayer);
 
-        // Si no hay suelo o hay un obstáculo, decide qué hacer
+        bool bordeSeguro = false;
+
+        // Comprobar suelo normal
+        RaycastHit2D sueloDetectado = Physics2D.Raycast(checkSuelo.position + bordeOffset, Vector2.down, distanciaBorde, sueloLayer);
+        if (sueloDetectado.collider != null) bordeSeguro = true;
+
+        // Comprobar si hay portal delante como suelo seguro
+        RaycastHit2D portalDetectado = Physics2D.Raycast(checkSuelo.position + bordeOffset, Vector2.down, distanciaBorde, 1 << LayerMask.NameToLayer("PortalLayer"));
+        if (portalDetectado.collider != null) bordeSeguro = true;
+
+        // --- Lógica principal ---
         if (!forzarMovimiento)
         {
+            // Evitar caídas normales, pero permitir portales
             if (!bordeSeguro && enSuelo)
             {
                 if (!IntentarSaltarHaciaPlataforma())
                     CambiarDireccion();
             }
 
+            // Saltar si hay obstáculo, ignorando portales
             if (obstaculo.collider != null && enSuelo)
             {
                 if (Time.time > proximoSalto)
@@ -173,26 +188,24 @@ public class MovimientoBotInteligente : MonoBehaviour
                 }
             }
 
-            // Si se topa con otro bot
+            // Separar bots cercanos
             DetectarYSepararBots();
 
-            // --- 🧠 Exploración aleatoria ---
+            // Exploración aleatoria
             if (Time.time - tiempoUltimoCambioDireccion > tiempoCambioDireccion)
             {
-                // 30% de probabilidad de cambiar dirección aunque no haya obstáculo
                 if (Random.value < 0.3f)
                     CambiarDireccion();
 
                 tiempoUltimoCambioDireccion = Time.time;
             }
 
-            // --- Si está demasiado quieto, forzar movimiento ---
+            // Forzar movimiento si está demasiado quieto
             if (Mathf.Abs(rb.velocity.x) < 0.1f && enSuelo)
             {
                 tiempoQuietoActual += Time.deltaTime;
                 if (tiempoQuietoActual > tiempoQuietoMax)
                 {
-                    // Cambiar dirección o saltar aleatoriamente
                     if (Random.value < 0.5f)
                         CambiarDireccion();
                     else
@@ -261,8 +274,18 @@ public class MovimientoBotInteligente : MonoBehaviour
         if (checkSuelo == null) return true;
 
         Vector3 origen = checkSuelo.position + Vector3.right * direccion * 0.6f;
+
+        // Comprueba suelo normal
         RaycastHit2D sueloDetectado = Physics2D.Raycast(origen, Vector2.down, distanciaSeguridadVacio, sueloLayer);
-        return sueloDetectado.collider != null;
+        if (sueloDetectado.collider != null)
+            return true;
+
+        // Permite pasar sobre portales
+        RaycastHit2D portalDetectado = Physics2D.Raycast(origen, Vector2.down, distanciaSeguridadVacio, 1 << LayerMask.NameToLayer("PortalLayer"));
+        if (portalDetectado.collider != null)
+            return true;
+
+        return false;
     }
 
     private void Saltar()
