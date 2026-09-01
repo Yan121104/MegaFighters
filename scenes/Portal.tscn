@@ -1,0 +1,21 @@
+[gd_scene format=3 uid="uid://ioweaqhme5a8"]
+
+[ext_resource type="Script" uid="uid://cyy7t5iifub5m" path="res://scripts/portal.gd" id="1_fw72y"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_46iir"]
+size = Vector2(16, 48)
+
+[node name="Portal" type="Area2D" unique_id=1851884324]
+script = ExtResource("1_fw72y")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1639346159]
+shape = SubResource("RectangleShape2D_46iir")
+
+[node name="SpawnPoint" type="Marker2D" parent="." unique_id=2108312081]
+position = Vector2(-18, 0)
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=249076364]
+position = Vector2(0, 0.99999857)
+scale = Vector2(0.019042967, 0.07218046)
+
+[connection signal="body_entered" from="." to="." method="_on_body_entered"]
