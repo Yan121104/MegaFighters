@@ -66,7 +66,8 @@ scale = Vector2(1.8603897, 1.6564101)
 texture = ExtResource("1_oirhb")
 
 [node name="Player" parent="." unique_id=1225878370 instance=ExtResource("2_27y2h")]
-position = Vector2(162, 192)
+position = Vector2(152, 198)
+metadata/_edit_group_ = true
 
 [node name="Suelos" type="Node2D" parent="." unique_id=1065611799]
 
@@ -210,21 +211,39 @@ metadata/_edit_group_ = true
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Paredes/p9" unique_id=768992024]
 shape = SubResource("RectangleShape2D_dxcar")
 
-[node name="Portal1" parent="." unique_id=1851884324 instance=ExtResource("28_yroxq")]
+[node name="Portal1" parent="." unique_id=1851884324 node_paths=PackedStringArray("otro_portal") instance=ExtResource("28_yroxq")]
 position = Vector2(44, 190)
+otro_portal = NodePath(".")
 
 [node name="CollisionShape2D" parent="Portal1" index="0" unique_id=1639346159]
 position = Vector2(-3, 1)
 
 [node name="SpawnPoint" parent="Portal1" index="1" unique_id=2108312081]
-position = Vector2(40, 203)
+position = Vector2(25, 200)
 
-[node name="Portal2" parent="." unique_id=1661703200 instance=ExtResource("28_yroxq")]
+[node name="Portal2" parent="." unique_id=1661703200 node_paths=PackedStringArray("otro_portal") instance=ExtResource("28_yroxq")]
 position = Vector2(40, 390)
+otro_portal = NodePath(".")
 
 [node name="SpawnPoint" parent="Portal2" index="1" unique_id=2108312081]
-position = Vector2(50, -198)
+position = Vector2(25, -200)
+
+[node name="Portal3" parent="." unique_id=1961145753 node_paths=PackedStringArray("otro_portal") instance=ExtResource("28_yroxq")]
+position = Vector2(1081, 264)
+otro_portal = NodePath(".")
+
+[node name="SpawnPoint" parent="Portal3" index="1" unique_id=2108312081]
+position = Vector2(-25, 210)
+
+[node name="Portal4" parent="." unique_id=755507736 node_paths=PackedStringArray("otro_portal") instance=ExtResource("28_yroxq")]
+position = Vector2(1082, 473)
+otro_portal = NodePath(".")
+
+[node name="SpawnPoint" parent="Portal4" index="1" unique_id=2108312081]
+position = Vector2(-25, -205)
 
 [editable path="Player"]
 [editable path="Portal1"]
 [editable path="Portal2"]
+[editable path="Portal3"]
+[editable path="Portal4"]
