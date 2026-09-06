@@ -1,0 +1,155 @@
+[gd_scene format=3 uid="uid://dpvfcexn3k27x"]
+
+[ext_resource type="Script" uid="uid://d1ift2mh6ejgp" path="res://scripts/enemy.gd" id="1_2mchx"]
+[ext_resource type="Texture2D" uid="uid://clei2qj4w36np" path="res://assets/sprites/standing/standingPlayer1/standing1.png" id="1_4ra3w"]
+[ext_resource type="Texture2D" uid="uid://bp0dqfke1scxe" path="res://assets/sprites/physicalAttacks/physicalAttacksPlayer1/bam1.png" id="1_i4rgx"]
+[ext_resource type="Texture2D" uid="uid://bbs1oeatdcrh7" path="res://assets/sprites/physicalAttacks/physicalAttacksPlayer1/bam2.png" id="2_2mchx"]
+[ext_resource type="Texture2D" uid="uid://bg5pimupgci50" path="res://assets/sprites/standing/standingPlayer1/standing2.png" id="2_5uy6h"]
+[ext_resource type="Texture2D" uid="uid://cpyf5gs1e3qyh" path="res://assets/sprites/standing/standingPlayer1/standing3.png" id="3_c4w8v"]
+[ext_resource type="Texture2D" uid="uid://du8b8q1g7evfu" path="res://assets/sprites/physicalAttacks/physicalAttacksPlayer1/krok1.png" id="3_t3vcr"]
+[ext_resource type="Texture2D" uid="uid://bbsqlo1kcpx3b" path="res://assets/sprites/physicalAttacks/physicalAttacksPlayer1/krok2.png" id="4_qaulx"]
+[ext_resource type="Texture2D" uid="uid://bvoluhft6jkc4" path="res://assets/sprites/physicalAttacks/physicalAttacksPlayer1/pow1.png" id="5_1f82d"]
+[ext_resource type="Texture2D" uid="uid://carhkna3cmvhp" path="res://assets/sprites/physicalAttacks/physicalAttacksPlayer1/pow2.png" id="6_lioqc"]
+[ext_resource type="Texture2D" uid="uid://brigcqsvhvsl6" path="res://assets/sprites/physicalAttacks/physicalAttacksPlayer1/wayah.png" id="7_0lg75"]
+[ext_resource type="Texture2D" uid="uid://ce6pemwvhk5du" path="res://assets/sprites/ducking/duckingPlayer1/ducking1.png" id="8_lsnsy"]
+[ext_resource type="Texture2D" uid="uid://b0qqcmubgg8n1" path="res://assets/sprites/jumping/jumpingPlayer1/jumping1.png" id="9_thsr5"]
+[ext_resource type="Texture2D" uid="uid://c0kybhgeaq82b" path="res://assets/sprites/jumping/jumpingPlayer1/jumping2.png" id="10_ekh6n"]
+[ext_resource type="Texture2D" uid="uid://biocijwefvsfy" path="res://assets/sprites/roll dive/rollDivePlayer1/roll_dive1.png" id="11_2sbpf"]
+[ext_resource type="Texture2D" uid="uid://c2w7p3h2r2l83" path="res://assets/sprites/roll dive/rollDivePlayer1/roll_dive3.png" id="12_78kod"]
+[ext_resource type="Texture2D" uid="uid://cwem3p3wyyk5p" path="res://assets/sprites/roll dive/rollDivePlayer1/roll_dive4.png" id="13_605iw"]
+[ext_resource type="Texture2D" uid="uid://b801x8x75ed0g" path="res://assets/sprites/roll dive/rollDivePlayer1/roll_dive2.png" id="14_x6q4o"]
+[ext_resource type="Texture2D" uid="uid://dv8tbohvg2e8f" path="res://assets/sprites/running/runningPlayer1/running1.png" id="15_2tuss"]
+[ext_resource type="Texture2D" uid="uid://wra0k6vurfug" path="res://assets/sprites/running/runningPlayer1/running2.png" id="16_7v6cf"]
+[ext_resource type="Texture2D" uid="uid://bc2m5bjmsh5mt" path="res://assets/sprites/running/runningPlayer1/running3.png" id="17_vab5u"]
+[ext_resource type="Texture2D" uid="uid://cyra65n6mf7dm" path="res://assets/sprites/running/runningPlayer1/running4.png" id="18_qiusc"]
+[ext_resource type="Texture2D" uid="uid://b4x8ag3dblr24" path="res://assets/sprites/walking/walkingPlayer1/walking1.png" id="22_5ie7m"]
+[ext_resource type="Texture2D" uid="uid://yb8qskuhjnmi" path="res://assets/sprites/walking/walkingPlayer1/walking2.png" id="23_ya47j"]
+[ext_resource type="Texture2D" uid="uid://ddptph2ewyqw6" path="res://assets/sprites/walking/walkingPlayer1/walking3.png" id="24_hyejq"]
+[ext_resource type="Texture2D" uid="uid://i0h1hqmbdgds" path="res://assets/sprites/walking/walkingPlayer1/walking4.png" id="25_j0dkt"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_oirhb"]
+size = Vector2(28, 32)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_80n4u"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("1_i4rgx")
+}, {
+"duration": 1.0,
+"texture": ExtResource("2_2mchx")
+}, {
+"duration": 1.0,
+"texture": ExtResource("3_t3vcr")
+}, {
+"duration": 1.0,
+"texture": ExtResource("4_qaulx")
+}, {
+"duration": 1.0,
+"texture": ExtResource("5_1f82d")
+}, {
+"duration": 1.0,
+"texture": ExtResource("6_lioqc")
+}, {
+"duration": 1.0,
+"texture": ExtResource("7_0lg75")
+}],
+"loop": 2,
+"name": &"attack",
+"speed": 3.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("8_lsnsy")
+}],
+"loop": 1,
+"name": &"ducking",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("9_thsr5")
+}, {
+"duration": 1.0,
+"texture": ExtResource("10_ekh6n")
+}],
+"loop": 1,
+"name": &"jump",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("11_2sbpf")
+}, {
+"duration": 1.0,
+"texture": ExtResource("12_78kod")
+}, {
+"duration": 1.0,
+"texture": ExtResource("13_605iw")
+}, {
+"duration": 1.0,
+"texture": ExtResource("14_x6q4o")
+}],
+"loop": 2,
+"name": &"roll_dive",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("15_2tuss")
+}, {
+"duration": 1.0,
+"texture": ExtResource("16_7v6cf")
+}, {
+"duration": 1.0,
+"texture": ExtResource("17_vab5u")
+}, {
+"duration": 1.0,
+"texture": ExtResource("18_qiusc")
+}],
+"loop": 1,
+"name": &"run",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("1_4ra3w")
+}, {
+"duration": 1.0,
+"texture": ExtResource("2_5uy6h")
+}, {
+"duration": 1.0,
+"texture": ExtResource("3_c4w8v")
+}],
+"loop": 1,
+"name": &"standing",
+"speed": 3.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("22_5ie7m")
+}, {
+"duration": 1.0,
+"texture": ExtResource("23_ya47j")
+}, {
+"duration": 1.0,
+"texture": ExtResource("24_hyejq")
+}, {
+"duration": 1.0,
+"texture": ExtResource("25_j0dkt")
+}],
+"loop": 1,
+"name": &"trot",
+"speed": 2.5
+}]
+
+[node name="Enemy" type="CharacterBody2D" unique_id=1225878370 groups=["Player"]]
+script = ExtResource("1_2mchx")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1819727561]
+shape = SubResource("RectangleShape2D_oirhb")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=127046454]
+scale = Vector2(2.1428568, 1.6666656)
+sprite_frames = SubResource("SpriteFrames_80n4u")
+animation = &"trot"

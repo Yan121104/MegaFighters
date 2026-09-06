@@ -1,153 +1,49 @@
 extends Area2D
 
-
-# ==========================================
-# PORTAL DESTINO
-# ==========================================
-
 @export var otro_portal: Area2D
 
 
-# ==========================================
-# ENTRADA AL PORTAL
-# ==========================================
-
 func _on_body_entered(body: Node2D) -> void:
-
-	# ------------------------------------------
-	# Comprobar que sea el jugador
-	# ------------------------------------------
-
-	if not body.is_in_group("Player"):
+	# Permitir paso de Player o Enemy
+	var es_viajero := body.is_in_group("player") or body.is_in_group("Player") or body.is_in_group("enemy")
+	if not es_viajero:
 		return
-
-
-	# ------------------------------------------
-	# Comprobar que exista el portal destino
-	# ------------------------------------------
 
 	if otro_portal == null:
-		push_warning(
-			name + ": No se ha asignado otro_portal."
-		)
+		push_warning(name + ": No se ha asignado otro_portal.")
 		return
 
-
-	# ------------------------------------------
-	# EVITAR LOOP INSTANTÁNEO
-	# ------------------------------------------
-	#
-	# Si el jugador acaba de aparecer en este
-	# portal, no volverá inmediatamente al portal
-	# anterior.
-	#
-	# Esto NO es un cooldown.
-	# El jugador podrá volver a usar este portal
-	# después de salir de él.
-	# ------------------------------------------
-
+	# Evitar bucle infinito si acaba de salir en este portal
 	if body.has_meta("portal_actual"):
-
 		if body.get_meta("portal_actual") == self:
 			return
 
-
-	# ==========================================
-	# OBTENER SPAWN DEL PORTAL DESTINO
-	# ==========================================
-
 	var spawn_point := otro_portal.get_node_or_null("SpawnPoint") as Node2D
-
 	if spawn_point == null:
-		push_warning(
-			otro_portal.name + ": No existe SpawnPoint."
-		)
+		push_warning(otro_portal.name + ": No existe SpawnPoint.")
 		return
 
-
-	# ==========================================
-	# GUARDAR VELOCIDAD ACTUAL
-	# ==========================================
-
-	var velocidad := Vector2.ZERO
-
+	var nueva_velocidad := Vector2.ZERO
 	if body is CharacterBody2D:
-		velocidad = body.velocity
+		nueva_velocidad = -body.velocity
 
+	# Marcar portal de destino
+	body.set_meta("portal_actual", otro_portal)
 
-	# ==========================================
-	# TELETRANSPORTAR
-	# ==========================================
+	# Delegar teletransporte e inversión de vista tanto al Player como al Enemy
+	if body.has_method("aplicar_efecto_portal"):
+		body.aplicar_efecto_portal(spawn_point.global_position, nueva_velocidad)
+	else:
+		body.global_position = spawn_point.global_position
+		if body is CharacterBody2D:
+			body.velocity = nueva_velocidad
 
-	body.global_position = spawn_point.global_position
-
-
-	# ==========================================
-	# INVERTIR DIRECCIÓN
-	# ==========================================
-	#
-	# Si entra →
-	# sale ←
-	#
-	# Si entra ↑
-	# sale ↓
-	#
-	# La magnitud de la velocidad se conserva.
-	# ==========================================
-
-	if body is CharacterBody2D:
-
-		body.velocity = -velocidad
-
-
-	# ==========================================
-	# INVERTIR ORIENTACIÓN DEL SPRITE
-	# ==========================================
-
-	var sprite := body.get_node_or_null(
-		"AnimatedSprite2D"
-	) as AnimatedSprite2D
-
-	if sprite != null:
-
-		sprite.flip_h = not sprite.flip_h
-
-
-	# ==========================================
-	# MARCAR PORTAL ACTUAL
-	# ==========================================
-	#
-	# El jugador acaba de aparecer en otro_portal.
-	# Por lo tanto, ese portal no debe devolverlo
-	# inmediatamente.
-	# ==========================================
-
-	body.set_meta(
-		"portal_actual",
-		otro_portal
-	)
-
-
-# ==========================================
-# SALIDA DEL PORTAL
-# ==========================================
 
 func _on_body_exited(body: Node2D) -> void:
-
-	if not body.is_in_group("Player"):
+	var es_viajero := body.is_in_group("player") or body.is_in_group("Player") or body.is_in_group("enemy")
+	if not es_viajero:
 		return
 
-
-	# ==========================================
-	# LIBERAR EL PORTAL
-	# ==========================================
-	#
-	# Una vez que el jugador salió del portal,
-	# puede volver a entrar normalmente.
-	# ==========================================
-
 	if body.has_meta("portal_actual"):
-
 		if body.get_meta("portal_actual") == self:
-
 			body.remove_meta("portal_actual")

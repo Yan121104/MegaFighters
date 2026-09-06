@@ -1,0 +1,19 @@
+[gd_scene format=3 uid="uid://cbf1mmft02axb"]
+
+[ext_resource type="Script" uid="uid://dkuuw8ifoglh7" path="res://scripts/plataforma_movil.gd" id="1_g5r2e"]
+
+[sub_resource type="DrawableTexture2D" id="DrawableTexture2D_eo76q"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_g5r2e"]
+size = Vector2(64, 6)
+
+[node name="PlataformaMovil" type="AnimatableBody2D" unique_id=52023812]
+script = ExtResource("1_g5r2e")
+metadata/_edit_group_ = true
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=2111444469]
+scale = Vector2(1, 0.08789062)
+texture = SubResource("DrawableTexture2D_eo76q")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=624813439]
+shape = SubResource("RectangleShape2D_g5r2e")

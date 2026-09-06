@@ -82,13 +82,13 @@ animations = [{
 "texture": ExtResource("12_hax0n")
 }, {
 "duration": 1.0,
-"texture": ExtResource("13_t4otl")
-}, {
-"duration": 1.0,
 "texture": ExtResource("14_j2b1d")
 }, {
 "duration": 1.0,
 "texture": ExtResource("15_cs1tg")
+}, {
+"duration": 1.0,
+"texture": ExtResource("13_t4otl")
 }],
 "loop": 2,
 "name": &"roll_dive",
@@ -152,4 +152,4 @@ shape = SubResource("RectangleShape2D_oirhb")
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=127046454]
 scale = Vector2(2.1428568, 1.6666656)
 sprite_frames = SubResource("SpriteFrames_80n4u")
-animation = &"standing"
+animation = &"roll_dive"

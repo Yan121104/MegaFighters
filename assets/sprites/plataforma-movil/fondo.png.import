@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://q53p0haxjsr5"
-path="res://.godot/imported/PlataformaMovil.png-e08a02a18097484a7b00d3d2a95e298e.ctex"
+uid="uid://4ljbas5qaus5"
+path="res://.godot/imported/fondo.png-2f7a3bbed8a90c19d59f911c4be58523.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/sprites/plataforma-movil/PlataformaMovil.png"
-dest_files=["res://.godot/imported/PlataformaMovil.png-e08a02a18097484a7b00d3d2a95e298e.ctex"]
+source_file="res://assets/sprites/plataforma-movil/fondo.png"
+dest_files=["res://.godot/imported/fondo.png-2f7a3bbed8a90c19d59f911c4be58523.ctex"]
 
 [params]
 
