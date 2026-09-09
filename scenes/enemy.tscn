@@ -14,6 +14,7 @@
 [ext_resource type="Texture2D" uid="uid://ce6pemwvhk5du" path="res://assets/sprites/ducking/duckingPlayer1/ducking1.png" id="8_lsnsy"]
 [ext_resource type="Texture2D" uid="uid://b0qqcmubgg8n1" path="res://assets/sprites/jumping/jumpingPlayer1/jumping1.png" id="9_thsr5"]
 [ext_resource type="Texture2D" uid="uid://c0kybhgeaq82b" path="res://assets/sprites/jumping/jumpingPlayer1/jumping2.png" id="10_ekh6n"]
+[ext_resource type="Texture2D" uid="uid://k6e3dmsd3dm2" path="res://assets/sprites/caido/caidoPlayer1/downed.png" id="10_t3vcr"]
 [ext_resource type="Texture2D" uid="uid://biocijwefvsfy" path="res://assets/sprites/roll dive/rollDivePlayer1/roll_dive1.png" id="11_2sbpf"]
 [ext_resource type="Texture2D" uid="uid://c2w7p3h2r2l83" path="res://assets/sprites/roll dive/rollDivePlayer1/roll_dive3.png" id="12_78kod"]
 [ext_resource type="Texture2D" uid="uid://cwem3p3wyyk5p" path="res://assets/sprites/roll dive/rollDivePlayer1/roll_dive4.png" id="13_605iw"]
@@ -29,6 +30,10 @@
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_oirhb"]
 size = Vector2(28, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_qaulx"]
+atlas = ExtResource("10_t3vcr")
+region = Rect2(0, 0, 19, 12)
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_80n4u"]
 animations = [{
@@ -64,6 +69,14 @@ animations = [{
 }],
 "loop": 1,
 "name": &"ducking",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_qaulx")
+}],
+"loop": 1,
+"name": &"fall_on_ground",
 "speed": 5.0
 }, {
 "frames": [{
@@ -152,4 +165,4 @@ shape = SubResource("RectangleShape2D_oirhb")
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=127046454]
 scale = Vector2(2.1428568, 1.6666656)
 sprite_frames = SubResource("SpriteFrames_80n4u")
-animation = &"trot"
+animation = &"fall_on_ground"

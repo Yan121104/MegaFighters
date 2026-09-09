@@ -1,4 +1,10 @@
-extends CharacterBody2D
+extends Danable
+
+# =========================================================
+# SEÑALES
+# =========================================================
+signal jugador_murio
+signal solicitado_reiniciar
 
 # =========================================================
 # CONSTANTES DE MOVIMIENTO Y FÍSICAS (Calibradas)
@@ -33,7 +39,7 @@ const OFFSET_CLIMB := Vector2.ZERO
 # SISTEMA DE ESTADOS
 # =========================================================
 
-enum Estado { NORMAL, ROLL_DIVE, ATAQUE, ESCALANDO }
+enum Estado { NORMAL, ROLL_DIVE, ATAQUE, ESCALANDO, MUERTO }
 var estado_actual: Estado = Estado.NORMAL
 
 @onready var sprite: AnimatedSprite2D = $AnimatedSprite2D
@@ -53,6 +59,11 @@ const TIEMPO_MAX_ROLL := 0.6
 var manteniendo_tecla_portal := false
 var direccion_bloqueada_portal := 0.0
 
+var posicion_inicial = Vector2.ZERO
+var gravedad_actual = GRAVEDAD
+var damping_entorno = 0.0
+var reiniciador = Reiniciador.new(reiniciar)
+
 
 # =========================================================
 # CICLO DE VIDA
@@ -62,6 +73,7 @@ func _ready() -> void:
 	add_to_group("player")
 	sprite.scale = ESCALA_NORMAL
 	sprite.position = Vector2.ZERO
+	posicion_inicial = global_position
 	
 	# Hace que al saltar o caer, conserve la inercia de la plataforma móvil
 	platform_on_leave = PlatformOnLeave.PLATFORM_ON_LEAVE_ADD_VELOCITY
@@ -78,7 +90,9 @@ func _ready() -> void:
 
 func _physics_process(delta: float) -> void:
 	if estado_actual != Estado.ESCALANDO and not is_on_floor():
-		velocity.y += GRAVEDAD * delta
+		velocity.y += gravedad_actual * delta
+	
+	velocity *= exp(-damping_entorno * delta)
 
 	match estado_actual:
 		Estado.NORMAL:
@@ -89,6 +103,14 @@ func _physics_process(delta: float) -> void:
 			_procesar_estado_ataque(delta)
 		Estado.ESCALANDO:
 			_procesar_estado_escalando()
+		Estado.MUERTO:
+			_procesar_estado_muerto()
+		_:
+			assert(
+				false,
+				"Estado incorrecto del jugador: %s" % Estado
+					.find_key(estado_actual)
+				)
 
 	move_and_slide()
 
@@ -194,6 +216,15 @@ func _procesar_estado_escalando() -> void:
 			reproducir_animacion("climb", true)
 		else:
 			sprite.pause()
+
+
+func _procesar_estado_muerto() -> void:
+	if Input.is_action_just_pressed("reset"):
+		solicitado_reiniciar.emit()
+
+func reiniciar() -> void:
+	cambiar_estado(Estado.NORMAL)
+	global_position = posicion_inicial
 
 
 # =========================================================
@@ -309,6 +340,7 @@ func iniciar_ataque() -> void:
 	cambiar_estado(Estado.ATAQUE)
 	velocity.x = 0.0
 	reproducir_animacion("attack")
+	
 
 
 # =========================================================
@@ -398,3 +430,23 @@ func _on_animation_finished() -> void:
 		else:
 			cambiar_estado(Estado.NORMAL)
 			reproducir_animacion("standing")
+
+# =========================================================
+# INTERFAZ PÚBLICA
+# =========================================================
+func morir() -> void:
+	cambiar_estado(Estado.MUERTO)
+	reproducir_animacion("fall_on_ground")
+	jugador_murio.emit()
+
+
+func esta_muerto() -> bool:
+	return estado_actual == Estado.MUERTO
+
+
+func cambiar_gravedad(invertir: bool = true) -> void:
+	gravedad_actual = -GRAVEDAD if invertir else GRAVEDAD
+
+
+func aplicar_damping(x: float = 0.0) -> void:
+	damping_entorno = x

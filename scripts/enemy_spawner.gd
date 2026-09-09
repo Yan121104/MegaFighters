@@ -36,6 +36,8 @@ var enemigos_por_spawn: Dictionary = {}
 
 var enemigos_actuales: int = 0
 
+var reiniciador = Reiniciador.new(reiniciar)
+
 
 # =========================================================
 # READY
@@ -236,3 +238,16 @@ func _on_enemy_tree_exited(spawn_point: Marker2D) -> void:
 		enemigos_actuales - 1,
 		0
 	)
+
+# =========================================================
+# REINICIAR ESTADO DEL SPAWN
+# =========================================================
+func reiniciar():
+	var enemies = enemigos_por_spawn.values()
+	
+	for en in enemies:
+		en.queue_free()
+		
+	await get_tree().process_frame
+	
+	crear_enemigos_iniciales()
