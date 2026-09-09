@@ -1,4 +1,4 @@
-extends CharacterBody2D
+extends Danable
 
 # =========================================================
 # VELOCIDADES Y FÍSICAS
@@ -51,7 +51,8 @@ enum Estado {
 	ATACANDO,
 	RECUPERACION,
 	INTERCEPTANDO_PLATAFORMA,
-	EN_PLATAFORMA
+	EN_PLATAFORMA,
+	MUERTO,
 }
 
 var estado: Estado = Estado.PATRULLANDO
@@ -73,6 +74,11 @@ const DURACION_INERCIA_PORTAL: float = 0.45
 var plataforma_objetivo: AnimatableBody2D = null
 var timer_cooldown_plataforma: float = 0.0
 
+# Físicas
+var gravedad_actual = GRAVEDAD
+var damping_entorno = 0.0
+var posicion_inicial = 0.0
+
 
 # =========================================================
 # CICLO PRINCIPAL
@@ -87,13 +93,15 @@ func _ready() -> void:
 
 	if not sprite.animation_finished.is_connected(_on_animation_finished):
 		sprite.animation_finished.connect(_on_animation_finished)
+		
+	posicion_inicial = global_position
 
 	buscar_jugador()
 
 
 func _physics_process(delta: float) -> void:
 	if not is_on_floor():
-		velocity.y += GRAVEDAD * delta
+		velocity.y += gravedad_actual * delta
 
 	if timer_cooldown > 0.0:
 		timer_cooldown -= delta
@@ -106,9 +114,12 @@ func _physics_process(delta: float) -> void:
 
 	if jugador == null or not is_instance_valid(jugador):
 		buscar_jugador()
+	
 
 	evaluar_transiciones()
 	procesar_comportamiento(delta)
+	
+	velocity *= exp(-damping_entorno * delta)
 
 	move_and_slide()
 
@@ -216,6 +227,8 @@ func procesar_comportamiento(delta: float) -> void:
 			ejecutar_intercepcion_plataforma(delta)
 		Estado.EN_PLATAFORMA:
 			ejecutar_en_plataforma(delta)
+		Estado.MUERTO:
+			pass
 
 
 # =========================================================
@@ -387,7 +400,6 @@ func ejecutar_anticipacion(delta: float) -> void:
 		estado = Estado.ATACANDO
 		sprite.play("attack")
 
-
 # =========================================================
 # PERCEPCIÓN ESPACIAL (RAYCASTS)
 # =========================================================
@@ -507,3 +519,26 @@ func _on_animation_finished() -> void:
 			if estado == Estado.RECUPERACION:
 				estado = Estado.PERSEGUIR
 		)
+
+# ==============================================
+# INTERFAZ PÚBLICA
+# ==============================================
+func morir() -> void:
+	estado = Estado.MUERTO
+	sprite.play("fall_on_ground")
+
+
+func esta_muerto() -> bool:
+	return estado == Estado.MUERTO
+
+
+func cambiar_gravedad(invertir: bool = true) -> void:
+	gravedad_actual = -GRAVEDAD if invertir else GRAVEDAD
+
+
+func aplicar_damping(x: float = 0.0) -> void:
+	damping_entorno = x
+
+func reiniciar() -> void:
+	estado = Estado.PATRULLANDO
+	global_position = posicion_inicial
