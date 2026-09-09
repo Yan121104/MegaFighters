@@ -1,0 +1,20 @@
+[gd_scene format=3 uid="uid://cawxu6p5ukqsy"]
+
+[ext_resource type="Script" uid="uid://bsec304ka5sfl" path="res://scripts/arma.gd" id="1_f5ogq"]
+[ext_resource type="Texture2D" uid="uid://b57yoixk6wf5o" path="res://assets/sprites/armas/desert.png" id="2_f5ogq"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_80n4u"]
+size = Vector2(16, 10)
+
+[node name="Desert" type="Area2D" unique_id=1672429170]
+scale = Vector2(1.2, 1.2)
+script = ExtResource("1_f5ogq")
+metadata/_edit_group_ = true
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=951116682]
+scale = Vector2(2, 2)
+texture = ExtResource("2_f5ogq")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1504212935]
+scale = Vector2(2, 2)
+shape = SubResource("RectangleShape2D_80n4u")

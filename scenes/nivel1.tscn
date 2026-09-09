@@ -34,6 +34,7 @@
 [ext_resource type="Texture2D" uid="uid://chd1m1bvuhtqm" path="res://assets/sprites/walking/walkingPlayerPrincipal/walking4.png" id="30_8evbx"]
 [ext_resource type="PackedScene" uid="uid://cbf1mmft02axb" path="res://scenes/plataforma_movil.tscn" id="33_27ft7"]
 [ext_resource type="Script" uid="uid://cxr26yac1ggdg" path="res://scripts/enemy_spawner.gd" id="34_53mwi"]
+[ext_resource type="Script" uid="uid://bbr1mhu717bus" path="res://scripts/SpawnArmas.gd" id="35_pnfpy"]
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_se8yl"]
 animations = [{
@@ -447,6 +448,33 @@ position = Vector2(843, 275)
 
 [node name="SpawnPoint6" type="Marker2D" parent="EnemySpawner" unique_id=1319126155]
 position = Vector2(1016, 481)
+
+[node name="PuntosArmas" type="Node2D" parent="." unique_id=1674541688]
+script = ExtResource("35_pnfpy")
+
+[node name="Spawn1" type="Marker2D" parent="PuntosArmas" unique_id=1979380759]
+position = Vector2(245, 193)
+
+[node name="Spawn2" type="Marker2D" parent="PuntosArmas" unique_id=1202532072]
+position = Vector2(285, 343)
+
+[node name="Spawn3" type="Marker2D" parent="PuntosArmas" unique_id=1800172208]
+position = Vector2(220, 459)
+
+[node name="Spawn4" type="Marker2D" parent="PuntosArmas" unique_id=51516019]
+position = Vector2(503, 200)
+
+[node name="Spawn5" type="Marker2D" parent="PuntosArmas" unique_id=950049669]
+position = Vector2(626, 313)
+
+[node name="Spawn6" type="Marker2D" parent="PuntosArmas" unique_id=602258615]
+position = Vector2(743, 475)
+
+[node name="Spawn7" type="Marker2D" parent="PuntosArmas" unique_id=2074887774]
+position = Vector2(912, 273)
+
+[node name="Spawn8" type="Marker2D" parent="PuntosArmas" unique_id=609845683]
+position = Vector2(989, 483)
 
 [editable path="Player"]
 [editable path="Portal1"]

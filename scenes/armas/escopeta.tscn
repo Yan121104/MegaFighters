@@ -1,0 +1,18 @@
+[gd_scene format=3 uid="uid://b04m85dtaae0d"]
+
+[ext_resource type="Script" uid="uid://bsec304ka5sfl" path="res://scripts/arma.gd" id="1_xhnav"]
+[ext_resource type="Texture2D" uid="uid://s6fdwlgvn3tp" path="res://assets/sprites/armas/escopeta.png" id="2_xhnav"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_80n4u"]
+size = Vector2(30, 8)
+
+[node name="Escopeta" type="Area2D" unique_id=1672429170]
+scale = Vector2(1.2, 1.2)
+script = ExtResource("1_xhnav")
+metadata/_edit_group_ = true
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=951116682]
+texture = ExtResource("2_xhnav")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1504212935]
+shape = SubResource("RectangleShape2D_80n4u")
