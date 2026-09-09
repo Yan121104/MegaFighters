@@ -1,0 +1,19 @@
+[gd_scene format=3 uid="uid://dpckiaiqlij2r"]
+
+[ext_resource type="Script" uid="uid://bsec304ka5sfl" path="res://scripts/arma.gd" id="1_ngn37"]
+[ext_resource type="Texture2D" uid="uid://bqiesr7fa33wu" path="res://assets/sprites/armas/hacha.png" id="2_ngn37"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_80n4u"]
+size = Vector2(27.272728, 12.727272)
+
+[node name="Hacha" type="Area2D" unique_id=1672429170]
+scale = Vector2(1.2, 1.2)
+script = ExtResource("1_ngn37")
+metadata/_edit_group_ = true
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=951116682]
+texture = ExtResource("2_ngn37")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1504212935]
+position = Vector2(2.709302e-08, 0)
+shape = SubResource("RectangleShape2D_80n4u")

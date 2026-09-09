@@ -1,0 +1,19 @@
+[gd_scene format=3 uid="uid://pf687jbw7vke"]
+
+[ext_resource type="Script" uid="uid://bsec304ka5sfl" path="res://scripts/arma.gd" id="1_wpsa1"]
+[ext_resource type="Texture2D" uid="uid://dojwe15v0camu" path="res://assets/sprites/armas/m4a1.png" id="2_wpsa1"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_80n4u"]
+size = Vector2(38.181816, 10.90909)
+
+[node name="M4A1" type="Area2D" unique_id=1672429170]
+scale = Vector2(1.2, 1.2)
+script = ExtResource("1_wpsa1")
+metadata/_edit_group_ = true
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=951116682]
+texture = ExtResource("2_wpsa1")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1504212935]
+position = Vector2(-6.773255e-09, 0)
+shape = SubResource("RectangleShape2D_80n4u")
