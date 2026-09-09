@@ -37,6 +37,7 @@
 [ext_resource type="Script" uid="uid://cxr26yac1ggdg" path="res://scripts/enemy_spawner.gd" id="34_53mwi"]
 [ext_resource type="Script" uid="uid://c1rkraxdd6c2i" path="res://scripts/agua.gd" id="35_pnfpy"]
 [ext_resource type="Script" uid="uid://3e3qclbnafcp" path="res://scripts/juego.gd" id="36_hskkh"]
+[ext_resource type="Script" uid="uid://bbr1mhu717bus" path="res://scripts/SpawnArmas.gd" id="37_spawnarmas"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_sodyg"]
 atlas = ExtResource("14_q1yjb")
@@ -509,6 +510,33 @@ script = ExtResource("35_pnfpy")
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Agua" unique_id=260274292]
 shape = SubResource("RectangleShape2D_53mwi")
 one_way_collision_direction = Vector2(0, -1)
+
+[node name="PuntosArmas" type="Node2D" parent="." unique_id=1674541688]
+script = ExtResource("37_spawnarmas")
+
+[node name="Spawn1" type="Marker2D" parent="PuntosArmas" unique_id=1979380759]
+position = Vector2(245, 193)
+
+[node name="Spawn2" type="Marker2D" parent="PuntosArmas" unique_id=1202532072]
+position = Vector2(285, 343)
+
+[node name="Spawn3" type="Marker2D" parent="PuntosArmas" unique_id=1800172208]
+position = Vector2(220, 459)
+
+[node name="Spawn4" type="Marker2D" parent="PuntosArmas" unique_id=51516019]
+position = Vector2(503, 200)
+
+[node name="Spawn5" type="Marker2D" parent="PuntosArmas" unique_id=950049669]
+position = Vector2(626, 313)
+
+[node name="Spawn6" type="Marker2D" parent="PuntosArmas" unique_id=602258615]
+position = Vector2(743, 475)
+
+[node name="Spawn7" type="Marker2D" parent="PuntosArmas" unique_id=2074887774]
+position = Vector2(912, 273)
+
+[node name="Spawn8" type="Marker2D" parent="PuntosArmas" unique_id=609845683]
+position = Vector2(989, 483)
 
 [connection signal="jugador_murio" from="Player" to="Control/CenterContainer/Mensajes" method="_on_player_jugador_murio"]
 [connection signal="solicitado_reiniciar" from="Player" to="Control/CenterContainer/Mensajes" method="_on_player_solicitado_reiniciar"]

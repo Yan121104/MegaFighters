@@ -1,0 +1,20 @@
+[gd_scene format=3 uid="uid://f6ln6so5vrlp"]
+
+[ext_resource type="Texture2D" uid="uid://c51je6vxcbj2h" path="res://assets/sprites/armas/basuca.png" id="1_fo4ou"]
+[ext_resource type="Script" uid="uid://bsec304ka5sfl" path="res://scripts/arma.gd" id="1_kqdt6"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_80n4u"]
+size = Vector2(36, 18)
+
+[node name="Basuca" type="Area2D" unique_id=1672429170]
+scale = Vector2(1.2, 1.2)
+script = ExtResource("1_kqdt6")
+metadata/_edit_group_ = true
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=951116682]
+scale = Vector2(1.2, 1.2)
+texture = ExtResource("1_fo4ou")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1504212935]
+scale = Vector2(1.2, 1.2)
+shape = SubResource("RectangleShape2D_80n4u")

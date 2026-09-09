@@ -1,0 +1,18 @@
+[gd_scene format=3 uid="uid://cwjc4uf44iuu6"]
+
+[ext_resource type="Script" uid="uid://bsec304ka5sfl" path="res://scripts/arma.gd" id="1_iy5p6"]
+[ext_resource type="Texture2D" uid="uid://buydx251ba43u" path="res://assets/sprites/armas/machete.png" id="2_iy5p6"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_80n4u"]
+size = Vector2(24, 6)
+
+[node name="Machete" type="Area2D" unique_id=1672429170]
+scale = Vector2(1.2, 1.2)
+script = ExtResource("1_iy5p6")
+metadata/_edit_group_ = true
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=951116682]
+texture = ExtResource("2_iy5p6")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1504212935]
+shape = SubResource("RectangleShape2D_80n4u")

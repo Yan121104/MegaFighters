@@ -1,0 +1,18 @@
+[gd_scene format=3 uid="uid://84wnbyeeej6s"]
+
+[ext_resource type="Script" uid="uid://bsec304ka5sfl" path="res://scripts/arma.gd" id="1_6jvye"]
+[ext_resource type="Texture2D" uid="uid://dpn0r776ftof1" path="res://assets/sprites/armas/sable.png" id="2_6jvye"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_80n4u"]
+size = Vector2(32, 8)
+
+[node name="Sable" type="Area2D" unique_id=1672429170]
+scale = Vector2(1.2, 1.2)
+script = ExtResource("1_6jvye")
+metadata/_edit_group_ = true
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=951116682]
+texture = ExtResource("2_6jvye")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1504212935]
+shape = SubResource("RectangleShape2D_80n4u")
