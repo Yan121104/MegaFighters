@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dv84l330028ra"
-path="res://.godot/imported/aguaRocio.png-e48174770fdf55a791b5ea5a4f1c51d1.ctex"
+uid="uid://c145kqqqvyp0l"
+path="res://.godot/imported/aguaRocio.png-5ee83ee5124c8e3e1446ed01ba01921d.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://editables/aguaRocio.png"
-dest_files=["res://.godot/imported/aguaRocio.png-e48174770fdf55a791b5ea5a4f1c51d1.ctex"]
+source_file="res://assets/sprites/agua/aguaRocio.png"
+dest_files=["res://.godot/imported/aguaRocio.png-5ee83ee5124c8e3e1446ed01ba01921d.ctex"]
 
 [params]
 
